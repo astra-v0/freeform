@@ -76,7 +76,7 @@ export abstract class QuestionRenderer {
     return input;
   }
 
-  protected createButton(text: string, onClick: () => void, primary = true): HTMLButtonElement {
+  protected createButton(text: string, onClick: () => void, _primary = true): HTMLButtonElement {
     const button = document.createElement('button');
     button.textContent = text;
     

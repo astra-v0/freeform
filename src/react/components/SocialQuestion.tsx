@@ -1,6 +1,6 @@
 import React from 'react';
 import { SocialQuestion as SocialQuestionType, UserAnswer, SurveyTheme } from '../../types/index.js';
-import { Share2, Facebook, Twitter, Linkedin, Mail, ExternalLink } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Mail, ExternalLink } from 'lucide-react';
 
 interface SocialQuestionProps {
   question: SocialQuestionType;

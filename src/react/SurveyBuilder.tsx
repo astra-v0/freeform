@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { SurveyConfig, SurveyResponse, SurveyTheme, Question } from '../types/index.js';
 import { Survey } from './Survey.js';
-import { DataExporter } from '../export/DataExporter.js';
+// import { DataExporter } from '../export/DataExporter.js';
 
 interface SurveyBuilderProps {
   config: SurveyConfig;
@@ -14,9 +14,9 @@ export const SurveyBuilder: React.FC<SurveyBuilderProps> = ({
   config,
   onComplete,
   onAnswer,
-  onError
+  onError: _onError
 }) => {
-  const [responses, setResponses] = useState<SurveyResponse[]>([]);
+  const [_responses, setResponses] = useState<SurveyResponse[]>([]);
 
   const handleComplete = useCallback((response: SurveyResponse) => {
     setResponses(prev => [...prev, response]);
@@ -32,19 +32,20 @@ export const SurveyBuilder: React.FC<SurveyBuilderProps> = ({
     }
   }, [onAnswer]);
 
-  const exportData = useCallback((format: 'csv' | 'json' | 'object', options: any = {}) => {
-    const exporter = new DataExporter(responses);
-    return exporter.export({ format, ...options });
-  }, [responses]);
+  // Unused for now - can be used for future download functionality
+  // const exportData = useCallback((format: 'csv' | 'json' | 'object', options: any = {}) => {
+  //   const exporter = new DataExporter(responses);
+  //   return exporter.export({ format, ...options });
+  // }, [responses]);
 
-  const downloadData = useCallback((format: 'csv' | 'json', filename?: string) => {
-    const data = exportData(format) as string;
-    const defaultFilename = `${config.id}_${new Date().toISOString().split('T')[0]}.${format}`;
-    const finalFilename = filename || defaultFilename;
-    
-    const mimeType = format === 'csv' ? 'text/csv' : 'application/json';
-    DataExporter.exportToFile(data, finalFilename, mimeType);
-  }, [config.id, exportData]);
+  // const downloadData = useCallback((format: 'csv' | 'json', filename?: string) => {
+  //   const data = exportData(format) as string;
+  //   const defaultFilename = `${config.id}_${new Date().toISOString().split('T')[0]}.${format}`;
+  //   const finalFilename = filename || defaultFilename;
+  //   
+  //   const mimeType = format === 'csv' ? 'text/csv' : 'application/json';
+  //   DataExporter.exportToFile(data, finalFilename, mimeType);
+  // }, [config.id, exportData]);
 
   return (
     <Survey

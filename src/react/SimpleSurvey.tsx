@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Survey } from './Survey.js';
 import { SurveyConfig, Question, SurveyTheme, ChoiceOption } from '../types/index.js';
+import { useSurveyAnalytics } from '../analytics/useSurveyAnalytics.js';
+import { SurveyAnalytics } from '../analytics/SurveyAnalytics.js';
 
 export interface SimpleSocialLink {
   name: string;
@@ -47,6 +49,8 @@ export interface SimpleSurveyProps {
   questions: SimpleQuestion[];
   theme?: Partial<SurveyTheme>;
   onComplete?: (result: SimpleSurveyResult) => void;
+  enableAnalytics?: boolean;
+  onAnalyticsComplete?: (analytics: SurveyAnalytics) => void;
 }
 
 const generateId = (index: number): string => `q${index + 1}`;
@@ -166,7 +170,9 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
 export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
   questions,
   theme,
-  onComplete
+  onComplete,
+  enableAnalytics = false,
+  onAnalyticsComplete
 }) => {
   const config: SurveyConfig = {
     id: `survey_${Date.now()}`,
@@ -180,7 +186,33 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
     startQuestionId: 'q1'
   };
 
+  const analytics = enableAnalytics ? useSurveyAnalytics({
+    surveyId: config.id,
+    sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    totalQuestions: questions.length,
+    enableTracking: true,
+    persistToStorage: true,
+    onComplete: onAnalyticsComplete
+  }) : null;
+
+  // Track first question
+  useEffect(() => {
+    if (analytics && config.startQuestionId) {
+      analytics.startQuestion(config.startQuestionId);
+    }
+  }, [analytics, config.startQuestionId]);
+
+  const handleAnswer = (answer: any) => {
+    if (analytics && answer.questionId) {
+      analytics.endQuestion(answer.questionId, true);
+    }
+  };
+
   const handleComplete = (response: any) => {
+    if (analytics) {
+      analytics.completeSurvey();
+    }
+
     if (onComplete) {
       const answers: Record<string, any> = {};
       response.answers.forEach((answer: any) => {
@@ -198,6 +230,12 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
     }
   };
 
-  return <Survey config={config} onComplete={handleComplete} />;
+  return (
+    <Survey 
+      config={config} 
+      onComplete={handleComplete}
+      onAnswer={enableAnalytics ? handleAnswer : undefined}
+    />
+  );
 };
 

@@ -96,7 +96,7 @@ export class SurveyEngine {
     }
   }
 
-  private addNavigation(question: Question): void {
+  private addNavigation(_question: Question): void {
     const navigationContainer = document.createElement('div');
     navigationContainer.style.cssText = `
       display: flex;
@@ -120,7 +120,7 @@ export class SurveyEngine {
     this.container.appendChild(navigationContainer);
   }
 
-  private createNavigationButton(text: string, primary: boolean, onClick: () => void): HTMLElement {
+  private createNavigationButton(text: string, _primary: boolean, onClick: () => void): HTMLElement {
     const button = document.createElement('button');
     button.textContent = text;
     

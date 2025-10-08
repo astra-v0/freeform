@@ -1,6 +1,11 @@
-import { SimpleSurvey, SimpleQuestion } from '../../src/react/SimpleSurvey';
+import { useState } from 'react';
+import { SimpleSurvey, SimpleQuestion } from '../../src/index';
+import { AnalyticsDemo } from './AnalyticsDemo';
 
 function App() {
+  const [view, setView] = useState<'survey' | 'analytics'>('survey');
+  const [surveyCompleted, setSurveyCompleted] = useState(false);
+
   const questions: SimpleQuestion[] = [
     {
       title: 'Please describe your professional background and area of expertise (e.g., endocrinology, bioinformatics, data science, longevity research).',
@@ -73,14 +78,126 @@ function App() {
 
   const handleComplete = (result: any) => {
     console.log('Survey completed!', result);
-    alert(`Thank you! Received answers:\n${JSON.stringify(result.answers, null, 2)}`);
+    console.log('📊 Analytics data has been collected. Click "View Analytics" to see the dashboard.');
+    setSurveyCompleted(true);
   };
 
+  const handleRestart = () => {
+    setSurveyCompleted(false);
+    setView('survey');
+  };
+
+  if (surveyCompleted) {
+    return (
+      <div style={{
+        height: '100vh',
+        width: '100vw',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#1d1d1d',
+        color: '#ffffff',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ fontSize: '32px', marginBottom: '24px' }}>Thank you! 🎉</h1>
+          <p style={{ fontSize: '18px', marginBottom: '32px' }}>
+            Your responses have been saved.
+          </p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <button
+              onClick={() => setView('analytics')}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#4A9EFF',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              View Analytics Dashboard
+            </button>
+            <button
+              onClick={handleRestart}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: 'transparent',
+                color: '#4A9EFF',
+                border: '1px solid #4A9EFF',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              Take Survey Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'analytics') {
+    return (
+      <div>
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          left: '20px',
+          zIndex: 1000
+        }}>
+          <button
+            onClick={() => setView('survey')}
+            style={{
+              padding: '12px 24px',
+              backgroundColor: '#4A9EFF',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            ← Back to Survey
+          </button>
+        </div>
+        <AnalyticsDemo />
+      </div>
+    );
+  }
+
   return (
-    <SimpleSurvey 
-      questions={questions}
-      onComplete={handleComplete}
-    />
+    <div style={{ position: 'relative' }}>
+      <div style={{
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        zIndex: 1000
+      }}>
+        <button
+          onClick={() => setView('analytics')}
+          style={{
+            padding: '12px 24px',
+            backgroundColor: '#4A9EFF',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+          }}
+        >
+          📊 View Analytics
+        </button>
+      </div>
+      <SimpleSurvey 
+        questions={questions}
+        onComplete={handleComplete}
+        enableAnalytics={true}
+      />
+    </div>
   );
 }
 
