@@ -30,6 +30,17 @@ function App() {
         'Maybe, please contact me'
       ],
       required: true
+    },
+    {
+      title: 'Please provide your email address so we can contact you if needed.',
+      type: 'feedback',
+      fields: {
+        email: true,
+        firstName: true,
+        lastName: true,
+        company: true
+      },
+      required: true
     }
   ];
 
