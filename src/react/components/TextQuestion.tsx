@@ -59,12 +59,12 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '8px 0',
+    padding: '12px 0',
     border: 'none',
     borderBottom: `1px solid ${theme.accentColor}`,
     background: 'transparent',
-    color: theme.accentColor,
-    fontSize: '18px',
+    color: '#ffffff',
+    fontSize: '16px',
     outline: 'none',
     fontFamily: 'inherit',
     resize: question.multiline ? 'vertical' : 'none'
@@ -75,7 +75,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
       <h2 style={{
         fontSize: '24px',
         fontWeight: 400,
-        margin: '0 0 32px 0',
+        margin: '0 0 24px 0',
         color: theme.textColor
       }}>
         {question.title}
@@ -94,22 +94,34 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
       <form onSubmit={handleSubmit}>
         <div>
           {question.multiline ? (
-            <textarea
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder={question.placeholder}
-              style={{
-                ...inputStyle,
-                minHeight: '100px'
-              }}
-              maxLength={question.maxLength}
-            />
+            <div>
+              <textarea
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder={question.placeholder || "Type your answer here..."}
+                style={{
+                  ...inputStyle,
+                  minHeight: '120px'
+                }}
+                maxLength={question.maxLength}
+              />
+              <div style={{
+                fontSize: '12px',
+                color: '#cccccc',
+                marginTop: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <span>Shift ↑ + Enter ↵ to make a line break</span>
+              </div>
+            </div>
           ) : (
             <input
               type="text"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder={question.placeholder}
+              placeholder={question.placeholder || "Type your answer here..."}
               style={inputStyle}
               maxLength={question.maxLength}
             />
@@ -117,7 +129,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
 
           {error && (
             <div style={{
-              color: theme.accentColor,
+              color: '#ff6b6b',
               fontSize: '14px',
               marginTop: '8px'
             }}>

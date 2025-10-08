@@ -8,6 +8,14 @@ interface ChoiceQuestionProps {
   onAnswer: (answer: UserAnswer) => void;
 }
 
+function lightenColor(color: string, amount: number) {
+  const num = parseInt(color.replace('#', ''), 16);
+  const r = (num >> 16) + amount;
+  const b = ((num >> 8) & 0x00FF) + amount;
+  const g = (num & 0x0000FF) + amount;
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
 export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
   question,
   currentAnswer,
@@ -66,21 +74,54 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
   };
 
   const optionStyle: React.CSSProperties = {
-    display: 'block',
-    padding: '12px 0',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '10px',
+    marginBottom: '7px',
+    backgroundColor: '#2a2a2a',
+    borderRadius: '8px',
     cursor: 'pointer',
-    color: theme.accentColor
+    border: 'none',
+    transition: 'all 0.2s ease',
+    color: '#ffffff'
+  };
+
+  const selectedOptionStyle: React.CSSProperties = {
+    ...optionStyle,
+    backgroundColor: `${theme.backgroundColor}`,
+    border: `2px solid ${theme.accentColor}`
+  };
+
+  const letterStyle: React.CSSProperties = {
+    display: 'inline-block',
+    width: '24px',
+    height: '24px',
+    backgroundColor: theme.backgroundColor,
+    border: `1px solid ${lightenColor(theme.backgroundColor, 50)}`,
+    borderRadius: '4px',
+    textAlign: 'center',
+    lineHeight: '24px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    marginRight: '16px',
+  };
+
+  const letterStyleSelected: React.CSSProperties = {
+    ...letterStyle,
+    backgroundColor: theme.accentColor,
+    color: theme.backgroundColor
   };
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '8px 0',
+    padding: '12px 0',
     border: 'none',
     borderBottom: `1px solid ${theme.accentColor}`,
     background: 'transparent',
-    color: theme.accentColor,
-    fontSize: '18px',
-    outline: 'none'
+    color: '#ffffff',
+    fontSize: '16px',
+    outline: 'none',
+    fontFamily: 'inherit'
   };
 
   return (
@@ -88,7 +129,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
       <h2 style={{
         fontSize: '24px',
         fontWeight: 400,
-        margin: '0 0 32px 0',
+        margin: '0 0 24px 0',
         color: theme.textColor
       }}>
         {question.title}
@@ -105,40 +146,59 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
       )}
 
       <div>
-        {question.options.map((option) => (
-          <label
-            key={option.id}
-            style={optionStyle}
-          >
-            <input
-              type={question.multiple ? 'checkbox' : 'radio'}
-              name={question.multiple ? `choice_${question.id}` : 'choice'}
-              value={option.value}
-              checked={selectedValues.has(option.value)}
-              onChange={(e) => handleOptionChange(option.value, e.target.checked)}
-              style={{
-                marginRight: '12px',
-                accentColor: theme.accentColor
-              }}
-            />
-            <span style={{
-              fontSize: '16px',
-              color: theme.accentColor
-            }}>
-              {option.label}
-            </span>
-          </label>
-        ))}
+        {question.options.map((option, index) => {
+          const letter = String.fromCharCode(65 + index); // A, B, C, D, E...
+          const isSelected = selectedValues.has(option.value);
+          
+          return (
+            <div
+              key={option.id}
+              style={isSelected ? selectedOptionStyle : optionStyle}
+              onClick={() => handleOptionChange(option.value, !isSelected)}
+            >
+              <input
+                type={question.multiple ? 'checkbox' : 'radio'}
+                name={question.multiple ? `choice_${question.id}` : 'choice'}
+                value={option.value}
+                checked={isSelected}
+                onChange={(e) => handleOptionChange(option.value, e.target.checked)}
+                style={{
+                  display: 'none' // Hide the default input
+                }}
+              />
+              <div style={isSelected ? letterStyleSelected : letterStyle}>
+                {letter}
+              </div>
+              <span style={{
+                fontSize: '16px',
+                color: '#ffffff',
+                flex: 1
+              }}>
+                {option.label}
+              </span>
+            </div>
+          );
+        })}
 
         {question.allowOther && (
           <div style={{
-            marginTop: '24px'
+            marginTop: '24px',
+            padding: '16px 20px',
+            backgroundColor: '#2a2a2a',
+            borderRadius: '8px'
           }}>
+            <div style={{
+              fontSize: '14px',
+              color: '#cccccc',
+              marginBottom: '12px'
+            }}>
+              Other option:
+            </div>
             <input
               type="text"
               value={otherValue}
               onChange={(e) => setOtherValue(e.target.value)}
-              placeholder="Other option"
+              placeholder="Specify your option"
               style={inputStyle}
             />
           </div>

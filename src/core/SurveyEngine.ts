@@ -27,9 +27,9 @@ export class SurveyEngine {
 
   constructor(config: SurveyConfig, container: HTMLElement) {
     const defaultTheme = {
-      backgroundColor: '#ffffff',
-      textColor: '#000000',
-      accentColor: '#0066cc'
+      backgroundColor: '#1d1d1d',
+      textColor: '#ffffff',
+      accentColor: '#4A9EFF'
     };
 
     this.config = {

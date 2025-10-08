@@ -49,20 +49,21 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '8px 0',
+    padding: '12px 0',
     border: 'none',
     borderBottom: `1px solid ${theme.accentColor}`,
     background: 'transparent',
-    color: theme.accentColor,
-    fontSize: '18px',
-    outline: 'none'
+    color: '#ffffff',
+    fontSize: '16px',
+    outline: 'none',
+    fontFamily: 'inherit'
   };
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
     marginBottom: '8px',
-    fontSize: '16px',
-    color: theme.textColor
+    fontSize: '14px',
+    color: '#cccccc'
   };
 
   return (
@@ -70,7 +71,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
       <h2 style={{
         fontSize: '24px',
         fontWeight: 400,
-        margin: '0 0 32px 0',
+        margin: '0 0 24px 0',
         color: theme.textColor
       }}>
         {question.title}
@@ -100,7 +101,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
               style={inputStyle}
             />
             {errors.firstName && (
-              <div style={{ color: theme.accentColor, fontSize: '14px', marginTop: '4px' }}>
+              <div style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}>
                 {errors.firstName}
               </div>
             )}
@@ -120,7 +121,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
               style={inputStyle}
             />
             {errors.lastName && (
-              <div style={{ color: theme.accentColor, fontSize: '14px', marginTop: '4px' }}>
+              <div style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}>
                 {errors.lastName}
               </div>
             )}
@@ -140,7 +141,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
               style={inputStyle}
             />
             {errors.email && (
-              <div style={{ color: theme.accentColor, fontSize: '14px', marginTop: '4px' }}>
+              <div style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}>
                 {errors.email}
               </div>
             )}
@@ -160,7 +161,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
               style={inputStyle}
             />
             {errors.company && (
-              <div style={{ color: theme.accentColor, fontSize: '14px', marginTop: '4px' }}>
+              <div style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}>
                 {errors.company}
               </div>
             )}

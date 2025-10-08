@@ -113,9 +113,9 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
     id: `survey_${Date.now()}`,
     title: 'Survey',
     theme: {
-      backgroundColor: theme?.backgroundColor || '#ffffff',
-      textColor: theme?.textColor || '#000000',
-      accentColor: theme?.accentColor || '#0066cc'
+      backgroundColor: theme?.backgroundColor || '#1d1d1d',
+      textColor: theme?.textColor || '#ffffff',
+      accentColor: theme?.accentColor || '#4A9EFF'
     },
     questions: convertQuestions(questions),
     startQuestionId: 'q1'

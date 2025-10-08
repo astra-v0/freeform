@@ -16,9 +16,9 @@ export const Survey: React.FC<SurveyProps> = ({
   onAnswer
 }) => {
   const defaultTheme = {
-    backgroundColor: '#ffffff',
-    textColor: '#000000',
-    accentColor: '#0066cc'
+    backgroundColor: '#1d1d1d',
+    textColor: '#ffffff',
+    accentColor: '#4A9EFF'
   };
 
   const theme = config.theme || defaultTheme;
@@ -229,34 +229,81 @@ export const Survey: React.FC<SurveyProps> = ({
     }
 
     const currentAnswer = currentState.answers.get(question.id);
+    const questionNumber = config.questions.findIndex(q => q.id === question.id) + 1;
+
+    const questionIconStyle: React.CSSProperties = {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '32px',
+      height: '32px',
+      backgroundColor: theme.accentColor,
+      color: '#1a1a1a',
+      borderRadius: '6px',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      marginRight: '16px',
+      marginBottom: '16px'
+    };
+
+    const questionTitleStyle: React.CSSProperties = {
+      display: 'flex',
+      alignItems: 'flex-start',
+      marginBottom: '32px'
+    };
+
+    const questionContentStyle: React.CSSProperties = {
+      flex: 1
+    };
 
     switch (question.type) {
       case 'text':
         return (
-          <TextQuestion
-            question={question}
-            currentAnswer={currentAnswer}
-            theme={theme}
-            onAnswer={handleAnswerChange}
-          />
+          <div style={questionTitleStyle}>
+            <div style={questionIconStyle}>
+              {questionNumber}
+            </div>
+            <div style={questionContentStyle}>
+              <TextQuestion
+                question={question}
+                currentAnswer={currentAnswer}
+                theme={theme}
+                onAnswer={handleAnswerChange}
+              />
+            </div>
+          </div>
         );
       case 'choice':
         return (
-          <ChoiceQuestion
-            question={question}
-            currentAnswer={currentAnswer}
-            theme={theme}
-            onAnswer={handleAnswerChange}
-          />
+          <div style={questionTitleStyle}>
+            <div style={questionIconStyle}>
+              {questionNumber}
+            </div>
+            <div style={questionContentStyle}>
+              <ChoiceQuestion
+                question={question}
+                currentAnswer={currentAnswer}
+                theme={theme}
+                onAnswer={handleAnswerChange}
+              />
+            </div>
+          </div>
         );
       case 'feedback':
         return (
-          <FeedbackForm
-            question={question}
-            currentAnswer={currentAnswer}
-            theme={theme}
-            onAnswer={handleAnswerChange}
-          />
+          <div style={questionTitleStyle}>
+            <div style={questionIconStyle}>
+              {questionNumber}
+            </div>
+            <div style={questionContentStyle}>
+              <FeedbackForm
+                question={question}
+                currentAnswer={currentAnswer}
+                theme={theme}
+                onAnswer={handleAnswerChange}
+              />
+            </div>
+          </div>
         );
       default:
         return <div>Unsupported question type: {question.type}</div>;
@@ -267,26 +314,41 @@ export const Survey: React.FC<SurveyProps> = ({
     const question = getCurrentQuestion();
     if (!question) return null;
 
-    const buttonStyle: React.CSSProperties = {
+    const okButtonStyle: React.CSSProperties = {
+      backgroundColor: theme.accentColor,
+      color: '#1a1a1a',
+      border: 'none',
+      padding: '12px 32px',
+      fontSize: '16px',
+      fontWeight: '500',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      marginTop: '48px'
+    };
+
+    const backButtonStyle: React.CSSProperties = {
       background: 'transparent',
-      color: theme.accentColor,
+      color: '#cccccc',
       border: 'none',
       padding: '12px 0',
       fontSize: '16px',
       cursor: 'pointer',
-      textDecoration: 'underline'
+      textDecoration: 'underline',
+      marginTop: '48px'
     };
 
     return (
       <div>
         {validationError && (
           <div style={{
-            color: theme.accentColor,
+            color: '#ff6b6b',
             fontSize: '14px',
             marginBottom: '16px',
             padding: '12px',
-            backgroundColor: `${theme.accentColor}10`,
-            borderLeft: `3px solid ${theme.accentColor}`
+            backgroundColor: '#ff6b6b10',
+            borderLeft: `3px solid #ff6b6b`,
+            borderRadius: '4px'
           }}>
             {validationError}
           </div>
@@ -295,10 +357,10 @@ export const Survey: React.FC<SurveyProps> = ({
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
-          marginTop: validationError ? '16px' : '48px'
+          alignItems: 'flex-start'
         }}>
           {currentState.canGoBack ? (
-            <button onClick={handleBack} style={buttonStyle}>
+            <button onClick={handleBack} style={backButtonStyle}>
               Back
             </button>
           ) : (
@@ -307,9 +369,15 @@ export const Survey: React.FC<SurveyProps> = ({
 
           <button
             onClick={handleNext}
-            style={buttonStyle}
+            style={okButtonStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#3A8BE6';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = theme.accentColor;
+            }}
           >
-            {isLastQuestion() ? 'Complete' : 'Next'}
+            OK
           </button>
         </div>
       </div>
@@ -317,20 +385,8 @@ export const Survey: React.FC<SurveyProps> = ({
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: theme.backgroundColor,
-      color: theme.textColor,
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      padding: '40px'
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '600px'
-      }}>
+    <div className="survey-container">
+      <div className="survey-content">
         {renderCurrentQuestion()}
         {renderNavigation()}
       </div>
