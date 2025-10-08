@@ -14,7 +14,7 @@ A lightweight, programmatic survey builder with Typeform-style UI.
 ## Installation
 
 ```bash
-npm install @your-org/survey-builder
+npm install @astra-v0/survey-builder
 ```
 
 ## Quick Start
@@ -22,7 +22,7 @@ npm install @your-org/survey-builder
 ### React
 
 ```tsx
-import { SimpleSurvey } from '@your-org/survey-builder';
+import { SimpleSurvey } from '@astra-v0/survey-builder';
 
 function App() {
   const questions = [
@@ -51,7 +51,7 @@ function App() {
 ### Vanilla JavaScript
 
 ```javascript
-import { SurveyBuilder } from '@your-org/survey-builder';
+import { SurveyBuilder } from '@astra-v0/survey-builder';
 
 const config = {
   id: 'my-survey',

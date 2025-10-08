@@ -1,5 +1,5 @@
 {
-  "name": "@your-org/survey-builder",
+  "name": "@astra-v0/survey-builder",
   "version": "1.0.0",
   "description": "Programmatic survey builder inspired by Typeform style",
   "main": "dist/index.js",
