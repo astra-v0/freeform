@@ -16,11 +16,12 @@ export interface SimpleQuestion {
   allowOther?: boolean;
   
   fields?: {
-    firstName?: boolean;
-    lastName?: boolean;
-    email?: boolean;
-    company?: boolean;
+    firstName?: boolean | { enabled: boolean; required?: boolean };
+    lastName?: boolean | { enabled: boolean; required?: boolean };
+    email?: boolean | { enabled: boolean; required?: boolean };
+    company?: boolean | { enabled: boolean; required?: boolean };
   };
+  requiredFields?: string[];
   
   required?: boolean;
 }
@@ -85,16 +86,36 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
     
     if (q.type === 'feedback') {
       const fields = q.fields || {};
+      const requiredFields = q.requiredFields || [];
+      
+      // Helper to convert field config
+      const convertField = (fieldName: string, defaultEnabled: boolean) => {
+        const field = fields[fieldName as keyof typeof fields];
+        
+        // If field is already an object, use it as is
+        if (typeof field === 'object' && field !== null) {
+          return field;
+        }
+        
+        // If field is boolean or undefined
+        const enabled = field ?? defaultEnabled;
+        const required = requiredFields.includes(fieldName);
+        
+        return typeof enabled === 'boolean' 
+          ? (required ? { enabled, required: true } : enabled)
+          : enabled;
+      };
+      
       return {
         id,
         type: 'feedback',
         title: q.title,
         description: q.description,
         fields: {
-          firstName: fields.firstName ?? true,
-          lastName: fields.lastName ?? true,
-          email: fields.email ?? true,
-          company: fields.company ?? false
+          firstName: convertField('firstName', true),
+          lastName: convertField('lastName', true),
+          email: convertField('email', true),
+          company: convertField('company', false)
         },
         required: q.required
       };

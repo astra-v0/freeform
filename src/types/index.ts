@@ -35,10 +35,10 @@ export interface ChoiceQuestion extends QuestionBase {
 export interface FeedbackFormQuestion extends QuestionBase {
   type: 'feedback';
   fields: {
-    firstName: boolean;
-    lastName: boolean;
-    email: boolean;
-    company: boolean;
+    firstName: boolean | { enabled: boolean; required?: boolean };
+    lastName: boolean | { enabled: boolean; required?: boolean };
+    email: boolean | { enabled: boolean; required?: boolean };
+    company: boolean | { enabled: boolean; required?: boolean };
   };
 }
 

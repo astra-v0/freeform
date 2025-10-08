@@ -30,6 +30,18 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
+  // Helper function to check if a field is enabled
+  const isFieldEnabled = (fieldName: keyof typeof question.fields): boolean => {
+    const field = question.fields[fieldName];
+    return typeof field === 'boolean' ? field : field.enabled;
+  };
+
+  // Helper function to check if a field is required
+  const isFieldRequired = (fieldName: keyof typeof question.fields): boolean => {
+    const field = question.fields[fieldName];
+    return typeof field === 'boolean' ? false : (field.required ?? false);
+  };
+
   useEffect(() => {
     if (currentAnswer && typeof currentAnswer.value === 'object' && !Array.isArray(currentAnswer.value)) {
       setFormData(currentAnswer.value as Record<string, string>);
@@ -104,10 +116,10 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
       )}
 
       <div>
-        {question.fields.firstName && (
+        {isFieldEnabled('firstName') && (
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>
-              First Name
+              First Name{isFieldRequired('firstName') && <span style={{ color: theme.accentColor }}> *</span>}
             </label>
             <input
               type="text"
@@ -126,10 +138,10 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
           </div>
         )}
 
-        {question.fields.lastName && (
+        {isFieldEnabled('lastName') && (
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>
-              Last Name
+              Last Name{isFieldRequired('lastName') && <span style={{ color: theme.accentColor }}> *</span>}
             </label>
             <input
               type="text"
@@ -148,10 +160,10 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
           </div>
         )}
 
-        {question.fields.email && (
+        {isFieldEnabled('email') && (
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>
-              Email
+              Email{isFieldRequired('email') && <span style={{ color: theme.accentColor }}> *</span>}
             </label>
             <input
               type="email"
@@ -170,10 +182,10 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
           </div>
         )}
 
-        {question.fields.company && (
+        {isFieldEnabled('company') && (
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>
-              Company
+              Company{isFieldRequired('company') && <span style={{ color: theme.accentColor }}> *</span>}
             </label>
             <input
               type="text"

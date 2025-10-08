@@ -48,20 +48,6 @@ export const Survey: React.FC<SurveyProps> = ({
     return config.questions.find(q => q.id === currentState.currentQuestionId);
   }, [config.questions, currentState.currentQuestionId]);
 
-  const isLastQuestion = useCallback((): boolean => {
-    const currentQuestion = getCurrentQuestion();
-    if (!currentQuestion || currentQuestion.type === 'conditional') {
-      return false;
-    }
-    
-    const remainingQuestions = config.questions.filter(q => 
-      !currentState.visitedQuestions.includes(q.id) && 
-      q.id !== currentState.currentQuestionId
-    );
-    
-    return remainingQuestions.length === 0;
-  }, [config.questions, currentState.visitedQuestions, currentState.currentQuestionId, getCurrentQuestion]);
-
   const handleAnswerChange = useCallback((answer: UserAnswer) => {
     setPendingAnswer(answer);
     setValidationError('');
@@ -88,6 +74,30 @@ export const Survey: React.FC<SurveyProps> = ({
       
       if (Array.isArray(pendingAnswer.value) && pendingAnswer.value.length === 0) {
         setValidationError('Please select at least one option');
+        return;
+      }
+    }
+
+    // Validate feedback form required fields
+    if (currentQuestion?.type === 'feedback' && pendingAnswer) {
+      const feedbackQuestion = currentQuestion as any;
+      const formData = pendingAnswer.value as Record<string, string>;
+      const requiredFields: string[] = [];
+      
+      const fieldNames = ['firstName', 'lastName', 'email', 'company'] as const;
+      fieldNames.forEach(fieldName => {
+        const field = feedbackQuestion.fields[fieldName];
+        const isEnabled = typeof field === 'boolean' ? field : field.enabled;
+        const isRequired = typeof field === 'boolean' ? false : (field.required ?? false);
+        
+        if (isEnabled && isRequired && (!formData[fieldName] || !formData[fieldName].trim())) {
+          const displayName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/([A-Z])/g, ' $1');
+          requiredFields.push(displayName);
+        }
+      });
+      
+      if (requiredFields.length > 0) {
+        setValidationError(`Please fill in the required fields: ${requiredFields.join(', ')}`);
         return;
       }
     }

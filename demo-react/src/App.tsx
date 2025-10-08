@@ -32,13 +32,13 @@ function App() {
       required: true
     },
     {
-      title: 'Please provide your email address so we can contact you if needed.',
+      title: 'Please provide your contact information. Fields marked with * are required.',
       type: 'feedback',
       fields: {
-        email: true,
-        firstName: true,
-        lastName: true,
-        company: true
+        firstName: { enabled: true, required: true },
+        lastName: { enabled: true, required: false },
+        email: { enabled: true, required: true },
+        company: { enabled: true, required: false }
       },
       required: true
     }
