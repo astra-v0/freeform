@@ -119,7 +119,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
     borderBottom: `1px solid ${theme.accentColor}`,
     background: 'transparent',
     color: '#ffffff',
-    fontSize: '16px',
+    fontSize: '26px',
     outline: 'none',
     fontFamily: 'inherit'
   };

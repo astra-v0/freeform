@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TextQuestion as TextQuestionType, UserAnswer, SurveyTheme } from '../../types/index.js';
 
 interface TextQuestionProps {
@@ -16,6 +16,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
 }) => {
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (currentAnswer && typeof currentAnswer.value === 'string') {
@@ -33,6 +34,17 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
       setError('');
     }
   }, [value, question.id, onAnswer]);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current && question.multiline) {
+      const textarea = textareaRef.current;
+      // Reset height to auto to get the correct scrollHeight
+      textarea.style.height = 'auto';
+      // Set height to scrollHeight to fit content
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [value, question.multiline]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,15 +71,16 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '12px 0',
+    padding: '4px 0',
     border: 'none',
     borderBottom: `1px solid ${theme.accentColor}`,
     background: 'transparent',
     color: '#ffffff',
-    fontSize: '16px',
+    fontSize: '26px',
     outline: 'none',
     fontFamily: 'inherit',
-    resize: question.multiline ? 'vertical' : 'none'
+    resize: 'none',
+    overflow: 'hidden'
   };
 
   return (
@@ -96,14 +109,16 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
           {question.multiline ? (
             <div>
               <textarea
+                ref={textareaRef}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={question.placeholder || "Type your answer here..."}
                 style={{
                   ...inputStyle,
-                  minHeight: '120px'
+                  minHeight: '28px'
                 }}
                 maxLength={question.maxLength}
+                rows={1}
               />
               <div style={{
                 fontSize: '12px',
