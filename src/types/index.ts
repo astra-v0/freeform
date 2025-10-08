@@ -6,7 +6,7 @@ export interface SurveyTheme {
 
 export interface QuestionBase {
   id: string;
-  type: 'text' | 'choice' | 'feedback' | 'conditional';
+  type: 'text' | 'choice' | 'feedback' | 'conditional' | 'info' | 'social';
   title: string;
   description?: string;
   required?: boolean;
@@ -53,7 +53,23 @@ export interface ConditionalQuestion extends QuestionBase {
   elseFlow?: string[];
 }
 
-export type Question = TextQuestion | ChoiceQuestion | FeedbackFormQuestion | ConditionalQuestion;
+export interface InfoQuestion extends QuestionBase {
+  type: 'info';
+  icon?: string;
+}
+
+export interface SocialLink {
+  name: string;
+  url: string;
+  icon?: string;
+}
+
+export interface SocialQuestion extends QuestionBase {
+  type: 'social';
+  socials: SocialLink[];
+}
+
+export type Question = TextQuestion | ChoiceQuestion | FeedbackFormQuestion | ConditionalQuestion | InfoQuestion | SocialQuestion;
 
 export interface SurveyConfig {
   id: string;

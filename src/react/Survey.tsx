@@ -1,8 +1,11 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { SurveyConfig, Question, UserAnswer, SurveyFlowState, SurveyResponse } from '../types/index.js';
 import { TextQuestion } from './components/TextQuestion.js';
 import { ChoiceQuestion } from './components/ChoiceQuestion.js';
 import { FeedbackForm } from './components/FeedbackForm.js';
+import { InfoQuestion } from './components/InfoQuestion.js';
+import { SocialQuestion } from './components/SocialQuestion.js';
 
 interface SurveyProps {
   config: SurveyConfig;
@@ -326,6 +329,34 @@ export const Survey: React.FC<SurveyProps> = ({
             </div>
           </div>
         );
+      case 'info':
+        return (
+          <div style={questionTitleStyle}>
+            <div style={questionContentStyle}>
+              <InfoQuestion
+                question={question}
+                currentAnswer={currentAnswer}
+                theme={theme}
+                onAnswer={handleAnswerChange}
+              />
+              {renderNavigation()}
+            </div>
+          </div>
+        );
+      case 'social':
+        return (
+          <div style={questionTitleStyle}>
+            <div style={questionContentStyle}>
+              <SocialQuestion
+                question={question}
+                currentAnswer={currentAnswer}
+                theme={theme}
+                onAnswer={handleAnswerChange}
+              />
+              {renderNavigation()}
+            </div>
+          </div>
+        );
       default:
         return <div>Unsupported question type: {question.type}</div>;
     }
@@ -361,14 +392,24 @@ export const Survey: React.FC<SurveyProps> = ({
       <div style={{ marginTop: '15px' }}>
         {validationError && (
           <div style={{
-            color: '#ff6b6b',
+            color: '#ffffff',
             fontSize: '14px',
             marginBottom: '16px',
-            padding: '12px',
-            backgroundColor: '#ff6b6b10',
-            borderLeft: `3px solid #ff6b6b`,
-            borderRadius: '4px'
+            padding: '12px 16px',
+            backgroundColor: 'rgb(139 57 19)',
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+            position: 'relative'
           }}>
+            <AlertTriangle 
+              size={20} 
+              style={{ 
+                marginRight: '12px',
+                flexShrink: 0
+              }} 
+            />
             {validationError}
           </div>
         )}

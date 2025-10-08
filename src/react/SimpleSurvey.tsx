@@ -2,11 +2,17 @@ import React from 'react';
 import { Survey } from './Survey.js';
 import { SurveyConfig, Question, SurveyTheme, ChoiceOption } from '../types/index.js';
 
+export interface SimpleSocialLink {
+  name: string;
+  url: string;
+  icon?: string;
+}
+
 export interface SimpleQuestion {
   title: string;
   description?: string;
   placeholder?: string;
-  type: 'text' | 'choice' | 'feedback';
+  type: 'text' | 'choice' | 'feedback' | 'info' | 'social';
   
   multiline?: boolean;
   maxLength?: number;
@@ -22,6 +28,12 @@ export interface SimpleQuestion {
     company?: boolean | { enabled: boolean; required?: boolean };
   };
   requiredFields?: string[];
+  
+  // For info questions
+  icon?: string;
+  
+  // For social questions
+  socials?: SimpleSocialLink[];
   
   required?: boolean;
 }
@@ -117,6 +129,32 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
           email: convertField('email', true),
           company: convertField('company', false)
         },
+        required: q.required
+      };
+    }
+    
+    if (q.type === 'info') {
+      return {
+        id,
+        type: 'info',
+        title: q.title,
+        description: q.description,
+        icon: q.icon,
+        required: q.required
+      };
+    }
+    
+    if (q.type === 'social') {
+      return {
+        id,
+        type: 'social',
+        title: q.title,
+        description: q.description,
+        socials: (q.socials || []).map(social => ({
+          name: social.name,
+          url: social.url,
+          icon: social.icon
+        })),
         required: q.required
       };
     }
