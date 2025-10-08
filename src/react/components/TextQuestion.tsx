@@ -8,6 +8,13 @@ interface TextQuestionProps {
   onAnswer: (answer: UserAnswer) => void;
 }
 
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export const TextQuestion: React.FC<TextQuestionProps> = ({
   question,
   currentAnswer,
@@ -16,6 +23,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
 }) => {
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -69,18 +77,22 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
     });
   };
 
+  const unfocusedColor = hexToRgba(theme.accentColor, 0.7);
+  
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '4px 0',
     border: 'none',
-    borderBottom: `1px solid ${theme.accentColor}`,
+    borderBottom: isFocused ? `1px solid ${theme.accentColor}` : `1px solid ${unfocusedColor}`,
+    boxShadow: isFocused ? `0 1px 0 0 ${theme.accentColor}` : 'none',
     background: 'transparent',
     color: '#ffffff',
     fontSize: '26px',
     outline: 'none',
     fontFamily: 'inherit',
     resize: 'none',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    transition: 'box-shadow 0.2s ease, border-bottom-color 0.2s ease'
   };
 
   return (
@@ -112,6 +124,8 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
                 ref={textareaRef}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 placeholder={question.placeholder || "Type your answer here..."}
                 style={{
                   ...inputStyle,
@@ -136,6 +150,8 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
               type="text"
               value={value}
               onChange={(e) => setValue(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               placeholder={question.placeholder || "Type your answer here..."}
               style={inputStyle}
               maxLength={question.maxLength}
