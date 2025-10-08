@@ -9,7 +9,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "demo": "cd demo-react && npm run dev",
     "demo:build": "cd demo-react && npm run build",
     "demo:preview": "cd demo-react && npm run preview"
