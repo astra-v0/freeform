@@ -5,7 +5,11 @@ export { DataExporter } from './export/DataExporter.js';
 export { Survey } from './react/Survey.js';
 export { SurveyBuilder as ReactSurveyBuilder } from './react/SurveyBuilder.js';
 export { SimpleSurvey } from './react/SimpleSurvey.js';
-export type { SimpleQuestion, SimpleSurveyResult, SimpleSurveyProps } from './react/SimpleSurvey.js';
+export type {
+  SimpleQuestion,
+  SimpleSurveyResult,
+  SimpleSurveyProps,
+} from './react/SimpleSurvey.js';
 
 import { SurveyBuilder } from './SurveyBuilder.js';
 export type {
@@ -22,7 +26,7 @@ export type {
   SurveyResponse,
   SurveyFlowState,
   ExportOptions,
-  SurveyResults
+  SurveyResults,
 } from './types/index.js';
 
 export { QuestionRenderer } from './components/QuestionRenderer.js';

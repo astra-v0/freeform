@@ -46,13 +46,18 @@ export abstract class QuestionRenderer {
     return element;
   }
 
-  protected createInput(placeholder?: string, multiline = false): HTMLInputElement | HTMLTextAreaElement {
-    const input = multiline ? document.createElement('textarea') : document.createElement('input');
-    
+  protected createInput(
+    placeholder?: string,
+    multiline = false
+  ): HTMLInputElement | HTMLTextAreaElement {
+    const input = multiline
+      ? document.createElement('textarea')
+      : document.createElement('input');
+
     if (!multiline) {
       (input as HTMLInputElement).type = 'text';
     }
-    
+
     if (placeholder) {
       input.placeholder = placeholder;
     }
@@ -76,10 +81,14 @@ export abstract class QuestionRenderer {
     return input;
   }
 
-  protected createButton(text: string, onClick: () => void, primary = true): HTMLButtonElement {
+  protected createButton(
+    text: string,
+    onClick: () => void,
+    _primary = true
+  ): HTMLButtonElement {
     const button = document.createElement('button');
     button.textContent = text;
-    
+
     const buttonStyle = `
       background: transparent;
       color: ${this.theme.accentColor};

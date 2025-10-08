@@ -1,5 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { SurveyConfig, SurveyResponse, SurveyTheme, Question } from '../types/index.js';
+import {
+  SurveyConfig,
+  SurveyResponse,
+  SurveyTheme,
+  Question,
+} from '../types/index.js';
 import { Survey } from './Survey.js';
 import { DataExporter } from '../export/DataExporter.js';
 
@@ -14,37 +19,49 @@ export const SurveyBuilder: React.FC<SurveyBuilderProps> = ({
   config,
   onComplete,
   onAnswer,
-  onError
+  onError: _onError,
 }) => {
   const [responses, setResponses] = useState<SurveyResponse[]>([]);
 
-  const handleComplete = useCallback((response: SurveyResponse) => {
-    setResponses(prev => [...prev, response]);
-    
-    if (onComplete) {
-      onComplete(response);
-    }
-  }, [onComplete]);
+  const handleComplete = useCallback(
+    (response: SurveyResponse) => {
+      setResponses(prev => [...prev, response]);
 
-  const handleAnswer = useCallback((answer: any) => {
-    if (onAnswer) {
-      onAnswer(answer);
-    }
-  }, [onAnswer]);
+      if (onComplete) {
+        onComplete(response);
+      }
+    },
+    [onComplete]
+  );
 
-  const exportData = useCallback((format: 'csv' | 'json' | 'object', options: any = {}) => {
-    const exporter = new DataExporter(responses);
-    return exporter.export({ format, ...options });
-  }, [responses]);
+  const handleAnswer = useCallback(
+    (answer: any) => {
+      if (onAnswer) {
+        onAnswer(answer);
+      }
+    },
+    [onAnswer]
+  );
 
-  const downloadData = useCallback((format: 'csv' | 'json', filename?: string) => {
-    const data = exportData(format) as string;
-    const defaultFilename = `${config.id}_${new Date().toISOString().split('T')[0]}.${format}`;
-    const finalFilename = filename || defaultFilename;
-    
-    const mimeType = format === 'csv' ? 'text/csv' : 'application/json';
-    DataExporter.exportToFile(data, finalFilename, mimeType);
-  }, [config.id, exportData]);
+  const exportData = useCallback(
+    (format: 'csv' | 'json' | 'object', options: any = {}) => {
+      const exporter = new DataExporter(responses);
+      return exporter.export({ format, ...options });
+    },
+    [responses]
+  );
+
+  const _downloadData = useCallback(
+    (format: 'csv' | 'json', filename?: string) => {
+      const data = exportData(format) as string;
+      const defaultFilename = `${config.id}_${new Date().toISOString().split('T')[0]}.${format}`;
+      const finalFilename = filename || defaultFilename;
+
+      const mimeType = format === 'csv' ? 'text/csv' : 'application/json';
+      DataExporter.exportToFile(data, finalFilename, mimeType);
+    },
+    [config.id, exportData]
+  );
 
   return (
     <Survey
@@ -69,10 +86,10 @@ export const createSurvey = (options: {
       backgroundColor: '#ffffff',
       textColor: '#333333',
       accentColor: '#007bff',
-      ...options.theme
+      ...options.theme,
     },
     questions: [],
-    startQuestionId: ''
+    startQuestionId: '',
   };
 };
 
@@ -97,7 +114,7 @@ export const createTextQuestion = (options: {
     placeholder: options.placeholder,
     multiline: options.multiline,
     maxLength: options.maxLength,
-    required: options.required
+    required: options.required,
   };
 };
 
@@ -118,7 +135,7 @@ export const createChoiceQuestion = (options: {
     options: options.options,
     multiple: options.multiple,
     allowOther: options.allowOther,
-    required: options.required
+    required: options.required,
   };
 };
 
@@ -140,6 +157,6 @@ export const createFeedbackForm = (options: {
     title: options.title,
     description: options.description,
     fields: options.fields,
-    required: options.required
+    required: options.required,
   };
 };

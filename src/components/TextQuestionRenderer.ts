@@ -6,20 +6,20 @@ export class TextQuestionRenderer extends QuestionRenderer {
 
   render(question: TextQuestion, currentAnswer?: UserAnswer): HTMLElement {
     const element = this.createBaseElement(question);
-    
+
     const inputContainer = document.createElement('div');
     inputContainer.style.marginTop = '24px';
-    
+
     this.input = this.createInput(question.placeholder, question.multiline);
-    
+
     if (question.maxLength) {
       this.input.maxLength = question.maxLength;
     }
-    
+
     if (currentAnswer && typeof currentAnswer.value === 'string') {
       this.input.value = currentAnswer.value;
     }
-    
+
     if (question.maxLength) {
       const counter = document.createElement('div');
       counter.style.cssText = `
@@ -28,20 +28,20 @@ export class TextQuestionRenderer extends QuestionRenderer {
         margin-top: 8px;
         opacity: 0.6;
       `;
-      
+
       const updateCounter = () => {
         counter.textContent = `${this.input.value.length}/${question.maxLength}`;
       };
-      
+
       this.input.addEventListener('input', updateCounter);
       updateCounter();
-      
+
       inputContainer.appendChild(counter);
     }
-    
+
     inputContainer.appendChild(this.input);
     element.appendChild(inputContainer);
-    
+
     return element;
   }
 
@@ -50,11 +50,11 @@ export class TextQuestionRenderer extends QuestionRenderer {
     if (!value && this.input.required) {
       return null;
     }
-    
+
     return {
       questionId: '',
       value: value,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 }

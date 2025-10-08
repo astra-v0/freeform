@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TextQuestion as TextQuestionType, UserAnswer, SurveyTheme } from '../../types/index.js';
+import {
+  TextQuestion as TextQuestionType,
+  UserAnswer,
+  SurveyTheme,
+} from '../../types/index.js';
 
 interface TextQuestionProps {
   question: TextQuestionType;
@@ -19,7 +23,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
   question,
   currentAnswer,
   theme,
-  onAnswer
+  onAnswer,
 }) => {
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -37,7 +41,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
       onAnswer({
         questionId: question.id,
         value: value.trim(),
-        timestamp: new Date()
+        timestamp: new Date(),
       });
       setError('');
     }
@@ -56,9 +60,9 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const trimmedValue = value.trim();
-    
+
     if (!trimmedValue && question.required) {
       setError('Please fill in the required field');
       return;
@@ -73,17 +77,19 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
     onAnswer({
       questionId: question.id,
       value: trimmedValue,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   };
 
   const unfocusedColor = hexToRgba(theme.accentColor, 0.7);
-  
+
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '4px 0',
     border: 'none',
-    borderBottom: isFocused ? `1px solid ${theme.accentColor}` : `1px solid ${unfocusedColor}`,
+    borderBottom: isFocused
+      ? `1px solid ${theme.accentColor}`
+      : `1px solid ${unfocusedColor}`,
     boxShadow: isFocused ? `0 1px 0 0 ${theme.accentColor}` : 'none',
     background: 'transparent',
     color: '#ffffff',
@@ -92,26 +98,30 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
     fontFamily: 'inherit',
     resize: 'none',
     overflow: 'hidden',
-    transition: 'box-shadow 0.2s ease, border-bottom-color 0.2s ease'
+    transition: 'box-shadow 0.2s ease, border-bottom-color 0.2s ease',
   };
 
   return (
     <div>
-      <h2 style={{
-        fontSize: '24px',
-        fontWeight: 400,
-        margin: '0 0 24px 0',
-        color: theme.textColor
-      }}>
+      <h2
+        style={{
+          fontSize: '24px',
+          fontWeight: 400,
+          margin: '0 0 24px 0',
+          color: theme.textColor,
+        }}
+      >
         {question.title}
       </h2>
 
       {question.description && (
-        <p style={{
-          fontSize: '16px',
-          margin: '0 0 24px 0',
-          color: theme.textColor
-        }}>
+        <p
+          style={{
+            fontSize: '16px',
+            margin: '0 0 24px 0',
+            color: theme.textColor,
+          }}
+        >
           {question.description}
         </p>
       )}
@@ -123,25 +133,27 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
               <textarea
                 ref={textareaRef}
                 value={value}
-                onChange={(e) => setValue(e.target.value)}
+                onChange={e => setValue(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder={question.placeholder || "Type your answer here..."}
+                placeholder={question.placeholder || 'Type your answer here...'}
                 style={{
                   ...inputStyle,
-                  minHeight: '28px'
+                  minHeight: '28px',
                 }}
                 maxLength={question.maxLength}
                 rows={1}
               />
-              <div style={{
-                fontSize: '12px',
-                color: '#cccccc',
-                marginTop: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#cccccc',
+                  marginTop: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
                 <span>Shift ↑ + Enter ↵ to make a line break</span>
               </div>
             </div>
@@ -149,21 +161,23 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
             <input
               type="text"
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={e => setValue(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              placeholder={question.placeholder || "Type your answer here..."}
+              placeholder={question.placeholder || 'Type your answer here...'}
               style={inputStyle}
               maxLength={question.maxLength}
             />
           )}
 
           {error && (
-            <div style={{
-              color: '#ff6b6b',
-              fontSize: '14px',
-              marginTop: '8px'
-            }}>
+            <div
+              style={{
+                color: '#ff6b6b',
+                fontSize: '14px',
+                marginTop: '8px',
+              }}
+            >
               {error}
             </div>
           )}

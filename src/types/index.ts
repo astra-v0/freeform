@@ -69,7 +69,13 @@ export interface SocialQuestion extends QuestionBase {
   socials: SocialLink[];
 }
 
-export type Question = TextQuestion | ChoiceQuestion | FeedbackFormQuestion | ConditionalQuestion | InfoQuestion | SocialQuestion;
+export type Question =
+  | TextQuestion
+  | ChoiceQuestion
+  | FeedbackFormQuestion
+  | ConditionalQuestion
+  | InfoQuestion
+  | SocialQuestion;
 
 export interface SurveyConfig {
   id: string;
@@ -116,10 +122,13 @@ export interface SurveyResults {
     totalResponses: number;
     completionRate: number;
     averageTime: number;
-    questionStats: Record<string, {
-      totalAnswers: number;
-      uniqueAnswers: number;
-      mostCommonAnswers: Array<{ value: string; count: number }>;
-    }>;
+    questionStats: Record<
+      string,
+      {
+        totalAnswers: number;
+        uniqueAnswers: number;
+        mostCommonAnswers: Array<{ value: string; count: number }>;
+      }
+    >;
   };
 }

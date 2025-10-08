@@ -1,4 +1,9 @@
-import { SurveyConfig, SurveyResponse, SurveyTheme, Question } from './types/index.js';
+import {
+  SurveyConfig,
+  SurveyResponse,
+  SurveyTheme,
+  Question,
+} from './types/index.js';
 import { SurveyEngine } from './core/SurveyEngine.js';
 import { DataExporter } from './export/DataExporter.js';
 
@@ -14,28 +19,30 @@ export class SurveyBuilder {
   public render(container: HTMLElement): SurveyBuilder {
     this.engine = new SurveyEngine(this.config, container);
     this.engine.setEventHandlers({
-      onNext: (answer) => {
+      onNext: answer => {
         console.log('Answer received:', answer);
       },
-      onComplete: (response) => {
+      onComplete: response => {
         this.responses.push(response);
         console.log('Survey completed:', response);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('Survey error:', error);
-      }
+      },
     });
-    
+
     return this;
   }
 
-  public onComplete(callback: (response: SurveyResponse) => void): SurveyBuilder {
+  public onComplete(
+    callback: (response: SurveyResponse) => void
+  ): SurveyBuilder {
     if (this.engine) {
       this.engine.setEventHandlers({
-        onComplete: (response) => {
+        onComplete: response => {
           this.responses.push(response);
           callback(response);
-        }
+        },
       });
     }
     return this;
@@ -44,7 +51,7 @@ export class SurveyBuilder {
   public onAnswer(callback: (answer: any) => void): SurveyBuilder {
     if (this.engine) {
       this.engine.setEventHandlers({
-        onNext: callback
+        onNext: callback,
       });
     }
     return this;
@@ -54,7 +61,10 @@ export class SurveyBuilder {
     return [...this.responses];
   }
 
-  public export(format: 'csv' | 'json' | 'object', options: any = {}): string | object {
+  public export(
+    format: 'csv' | 'json' | 'object',
+    options: any = {}
+  ): string | object {
     const exporter = new DataExporter(this.responses);
     return exporter.export({ format, ...options });
   }
@@ -63,7 +73,7 @@ export class SurveyBuilder {
     const data = this.export(format) as string;
     const defaultFilename = `${this.config.id}_${new Date().toISOString().split('T')[0]}.${format}`;
     const finalFilename = filename || defaultFilename;
-    
+
     const mimeType = format === 'csv' ? 'text/csv' : 'application/json';
     DataExporter.exportToFile(data, finalFilename, mimeType);
   }
@@ -94,10 +104,10 @@ export class SurveyBuilder {
         backgroundColor: '#ffffff',
         textColor: '#333333',
         accentColor: '#007bff',
-        ...options.theme
+        ...options.theme,
       },
       questions: [],
-      startQuestionId: ''
+      startQuestionId: '',
     };
   }
 
@@ -122,7 +132,7 @@ export class SurveyBuilder {
       placeholder: options.placeholder,
       multiline: options.multiline,
       maxLength: options.maxLength,
-      required: options.required
+      required: options.required,
     };
   }
 
@@ -143,7 +153,7 @@ export class SurveyBuilder {
       options: options.options,
       multiple: options.multiple,
       allowOther: options.allowOther,
-      required: options.required
+      required: options.required,
     };
   }
 
@@ -165,7 +175,7 @@ export class SurveyBuilder {
       title: options.title,
       description: options.description,
       fields: options.fields,
-      required: options.required
+      required: options.required,
     };
   }
 }

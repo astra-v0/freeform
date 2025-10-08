@@ -1,6 +1,11 @@
 import React from 'react';
 import { Survey } from './Survey.js';
-import { SurveyConfig, Question, SurveyTheme, ChoiceOption } from '../types/index.js';
+import {
+  SurveyConfig,
+  Question,
+  SurveyTheme,
+  ChoiceOption,
+} from '../types/index.js';
 
 export interface SimpleSocialLink {
   name: string;
@@ -13,14 +18,14 @@ export interface SimpleQuestion {
   description?: string;
   placeholder?: string;
   type: 'text' | 'choice' | 'feedback' | 'info' | 'social';
-  
+
   multiline?: boolean;
   maxLength?: number;
-  
+
   options?: string[] | Array<{ label: string; value?: string }>;
   multiple?: boolean;
   allowOther?: boolean;
-  
+
   fields?: {
     firstName?: boolean | { enabled: boolean; required?: boolean };
     lastName?: boolean | { enabled: boolean; required?: boolean };
@@ -28,13 +33,13 @@ export interface SimpleQuestion {
     company?: boolean | { enabled: boolean; required?: boolean };
   };
   requiredFields?: string[];
-  
+
   // For info questions
   icon?: string;
-  
+
   // For social questions
   socials?: SimpleSocialLink[];
-  
+
   required?: boolean;
 }
 
@@ -54,7 +59,7 @@ const generateId = (index: number): string => `q${index + 1}`;
 const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
   return simpleQuestions.map((q, index) => {
     const id = generateId(index);
-    
+
     if (q.type === 'text') {
       return {
         id,
@@ -64,26 +69,26 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
         placeholder: q.placeholder,
         multiline: q.multiline,
         maxLength: q.maxLength,
-        required: q.required
+        required: q.required,
       };
     }
-    
+
     if (q.type === 'choice') {
       const options: ChoiceOption[] = (q.options || []).map((opt, optIndex) => {
         if (typeof opt === 'string') {
           return {
             id: `${id}_opt${optIndex + 1}`,
             label: opt,
-            value: opt.toLowerCase().replace(/\s+/g, '_')
+            value: opt.toLowerCase().replace(/\s+/g, '_'),
           };
         }
         return {
           id: `${id}_opt${optIndex + 1}`,
           label: opt.label,
-          value: opt.value || opt.label.toLowerCase().replace(/\s+/g, '_')
+          value: opt.value || opt.label.toLowerCase().replace(/\s+/g, '_'),
         };
       });
-      
+
       return {
         id,
         type: 'choice',
@@ -92,32 +97,34 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
         options,
         multiple: q.multiple,
         allowOther: q.allowOther,
-        required: q.required
+        required: q.required,
       };
     }
-    
+
     if (q.type === 'feedback') {
       const fields = q.fields || {};
       const requiredFields = q.requiredFields || [];
-      
+
       // Helper to convert field config
       const convertField = (fieldName: string, defaultEnabled: boolean) => {
         const field = fields[fieldName as keyof typeof fields];
-        
+
         // If field is already an object, use it as is
         if (typeof field === 'object' && field !== null) {
           return field;
         }
-        
+
         // If field is boolean or undefined
         const enabled = field ?? defaultEnabled;
         const required = requiredFields.includes(fieldName);
-        
-        return typeof enabled === 'boolean' 
-          ? (required ? { enabled, required: true } : enabled)
+
+        return typeof enabled === 'boolean'
+          ? required
+            ? { enabled, required: true }
+            : enabled
           : enabled;
       };
-      
+
       return {
         id,
         type: 'feedback',
@@ -127,12 +134,12 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
           firstName: convertField('firstName', true),
           lastName: convertField('lastName', true),
           email: convertField('email', true),
-          company: convertField('company', false)
+          company: convertField('company', false),
         },
-        required: q.required
+        required: q.required,
       };
     }
-    
+
     if (q.type === 'info') {
       return {
         id,
@@ -140,10 +147,10 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
         title: q.title,
         description: q.description,
         icon: q.icon,
-        required: q.required
+        required: q.required,
       };
     }
-    
+
     if (q.type === 'social') {
       return {
         id,
@@ -153,12 +160,12 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
         socials: (q.socials || []).map(social => ({
           name: social.name,
           url: social.url,
-          icon: social.icon
+          icon: social.icon,
         })),
-        required: q.required
+        required: q.required,
       };
     }
-    
+
     throw new Error(`Unknown question type: ${q.type}`);
   });
 };
@@ -166,7 +173,7 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
 export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
   questions,
   theme,
-  onComplete
+  onComplete,
 }) => {
   const config: SurveyConfig = {
     id: `survey_${Date.now()}`,
@@ -174,10 +181,10 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
     theme: {
       backgroundColor: theme?.backgroundColor || '#1d1d1d',
       textColor: theme?.textColor || '#ffffff',
-      accentColor: theme?.accentColor || '#4A9EFF'
+      accentColor: theme?.accentColor || '#4A9EFF',
     },
     questions: convertQuestions(questions),
-    startQuestionId: 'q1'
+    startQuestionId: 'q1',
   };
 
   const handleComplete = (response: any) => {
@@ -186,18 +193,17 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
       response.answers.forEach((answer: any) => {
         const questionIndex = parseInt(answer.questionId.substring(1)) - 1;
         const originalQuestion = questions[questionIndex];
-        
+
         const key = originalQuestion.title;
         answers[key] = answer.value;
       });
-      
+
       onComplete({
         answers,
-        completedAt: response.endTime || new Date()
+        completedAt: response.endTime || new Date(),
       });
     }
   };
 
   return <Survey config={config} onComplete={handleComplete} />;
 };
-

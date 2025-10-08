@@ -1,6 +1,12 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { SurveyConfig, Question, UserAnswer, SurveyFlowState, SurveyResponse } from '../types/index.js';
+import {
+  SurveyConfig,
+  Question,
+  UserAnswer,
+  SurveyFlowState,
+  SurveyResponse,
+} from '../types/index.js';
 import { TextQuestion } from './components/TextQuestion.js';
 import { ChoiceQuestion } from './components/ChoiceQuestion.js';
 import { FeedbackForm } from './components/FeedbackForm.js';
@@ -16,20 +22,20 @@ interface SurveyProps {
 function lightenColor(color: string, amount: number) {
   const num = parseInt(color.replace('#', ''), 16);
   const r = (num >> 16) + amount;
-  const b = ((num >> 8) & 0x00FF) + amount;
-  const g = (num & 0x0000FF) + amount;
+  const b = ((num >> 8) & 0x00ff) + amount;
+  const g = (num & 0x0000ff) + amount;
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
-export const Survey: React.FC<SurveyProps> = ({ 
-  config, 
-  onComplete, 
-  onAnswer
+export const Survey: React.FC<SurveyProps> = ({
+  config,
+  onComplete,
+  onAnswer,
 }) => {
   const defaultTheme = {
     backgroundColor: '#1d1d1d',
     textColor: '#ffffff',
-    accentColor: '#4A9EFF'
+    accentColor: '#4A9EFF',
   };
 
   const theme = config.theme || defaultTheme;
@@ -39,12 +45,14 @@ export const Survey: React.FC<SurveyProps> = ({
     visitedQuestions: [],
     answers: new Map(),
     canGoBack: false,
-    canGoNext: true
+    canGoNext: true,
   });
 
   const [pendingAnswer, setPendingAnswer] = useState<UserAnswer | null>(null);
   const [validationError, setValidationError] = useState<string>('');
-  const sessionIdRef = useRef<string>(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const sessionIdRef = useRef<string>(
+    `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  );
   const startTimeRef = useRef<Date>(new Date());
 
   const getCurrentQuestion = useCallback((): Question | undefined => {
@@ -69,13 +77,19 @@ export const Survey: React.FC<SurveyProps> = ({
         }
         return;
       }
-      
-      if (typeof pendingAnswer.value === 'string' && !pendingAnswer.value.trim()) {
+
+      if (
+        typeof pendingAnswer.value === 'string' &&
+        !pendingAnswer.value.trim()
+      ) {
         setValidationError('Please enter an answer');
         return;
       }
-      
-      if (Array.isArray(pendingAnswer.value) && pendingAnswer.value.length === 0) {
+
+      if (
+        Array.isArray(pendingAnswer.value) &&
+        pendingAnswer.value.length === 0
+      ) {
         setValidationError('Please select at least one option');
         return;
       }
@@ -86,21 +100,30 @@ export const Survey: React.FC<SurveyProps> = ({
       const feedbackQuestion = currentQuestion as any;
       const formData = pendingAnswer.value as Record<string, string>;
       const requiredFields: string[] = [];
-      
+
       const fieldNames = ['firstName', 'lastName', 'email', 'company'] as const;
       fieldNames.forEach(fieldName => {
         const field = feedbackQuestion.fields[fieldName];
         const isEnabled = typeof field === 'boolean' ? field : field.enabled;
-        const isRequired = typeof field === 'boolean' ? false : (field.required ?? false);
-        
-        if (isEnabled && isRequired && (!formData[fieldName] || !formData[fieldName].trim())) {
-          const displayName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/([A-Z])/g, ' $1');
+        const isRequired =
+          typeof field === 'boolean' ? false : (field.required ?? false);
+
+        if (
+          isEnabled &&
+          isRequired &&
+          (!formData[fieldName] || !formData[fieldName].trim())
+        ) {
+          const displayName =
+            fieldName.charAt(0).toUpperCase() +
+            fieldName.slice(1).replace(/([A-Z])/g, ' $1');
           requiredFields.push(displayName);
         }
       });
-      
+
       if (requiredFields.length > 0) {
-        setValidationError(`Please fill in the required fields: ${requiredFields.join(', ')}`);
+        setValidationError(
+          `Please fill in the required fields: ${requiredFields.join(', ')}`
+        );
         return;
       }
     }
@@ -109,15 +132,18 @@ export const Survey: React.FC<SurveyProps> = ({
       const emptyAnswer = {
         questionId: currentState.currentQuestionId,
         value: '',
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       const newAnswers = new Map(currentState.answers);
       newAnswers.set(currentState.currentQuestionId, emptyAnswer);
-      
-      const newVisitedQuestions = [...currentState.visitedQuestions, currentState.currentQuestionId];
+
+      const newVisitedQuestions = [
+        ...currentState.visitedQuestions,
+        currentState.currentQuestionId,
+      ];
       const nextQuestionId = getNextQuestionId(currentQuestion!);
-      
+
       if (nextQuestionId) {
         setCurrentState(prev => ({
           ...prev,
@@ -125,7 +151,7 @@ export const Survey: React.FC<SurveyProps> = ({
           visitedQuestions: newVisitedQuestions,
           answers: newAnswers,
           canGoBack: true,
-          canGoNext: true
+          canGoNext: true,
         }));
         setValidationError('');
       } else {
@@ -136,9 +162,9 @@ export const Survey: React.FC<SurveyProps> = ({
           completed: true,
           startTime: startTimeRef.current,
           endTime: new Date(),
-          metadata: config.metadata
+          metadata: config.metadata,
         };
-        
+
         if (onComplete) {
           onComplete(response);
         }
@@ -150,16 +176,19 @@ export const Survey: React.FC<SurveyProps> = ({
     const answer = {
       ...pendingAnswer,
       questionId: currentState.currentQuestionId,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     const newAnswers = new Map(currentState.answers);
     newAnswers.set(currentState.currentQuestionId, answer);
 
-    const newVisitedQuestions = [...currentState.visitedQuestions, currentState.currentQuestionId];
+    const newVisitedQuestions = [
+      ...currentState.visitedQuestions,
+      currentState.currentQuestionId,
+    ];
 
     const nextQuestionId = getNextQuestionId(getCurrentQuestion()!);
-    
+
     if (nextQuestionId) {
       setCurrentState(prev => ({
         ...prev,
@@ -167,7 +196,7 @@ export const Survey: React.FC<SurveyProps> = ({
         visitedQuestions: newVisitedQuestions,
         answers: newAnswers,
         canGoBack: true,
-        canGoNext: true
+        canGoNext: true,
       }));
 
       setPendingAnswer(null);
@@ -183,23 +212,32 @@ export const Survey: React.FC<SurveyProps> = ({
         completed: true,
         startTime: startTimeRef.current,
         endTime: new Date(),
-        metadata: config.metadata
+        metadata: config.metadata,
       };
-      
+
       if (onComplete) {
         onComplete(response);
       }
     }
-  }, [pendingAnswer, currentState, config, onAnswer, onComplete, getCurrentQuestion]);
+  }, [
+    pendingAnswer,
+    currentState,
+    config,
+    onAnswer,
+    onComplete,
+    getCurrentQuestion,
+  ]);
 
   const getNextQuestionId = (currentQuestion: Question): string | null => {
-    const currentIndex = config.questions.findIndex(q => q.id === currentQuestion.id);
-    const remainingQuestions = config.questions.slice(currentIndex + 1);
-    
-    const nextQuestion = remainingQuestions.find(q => 
-      !currentState.visitedQuestions.includes(q.id)
+    const currentIndex = config.questions.findIndex(
+      q => q.id === currentQuestion.id
     );
-    
+    const remainingQuestions = config.questions.slice(currentIndex + 1);
+
+    const nextQuestion = remainingQuestions.find(
+      q => !currentState.visitedQuestions.includes(q.id)
+    );
+
     return nextQuestion?.id || null;
   };
 
@@ -208,9 +246,10 @@ export const Survey: React.FC<SurveyProps> = ({
       return;
     }
 
-    const previousQuestionId = currentState.visitedQuestions[currentState.visitedQuestions.length - 1];
+    const previousQuestionId =
+      currentState.visitedQuestions[currentState.visitedQuestions.length - 1];
     const newVisitedQuestions = currentState.visitedQuestions.slice(0, -1);
-    
+
     const newAnswers = new Map(currentState.answers);
     newAnswers.delete(currentState.currentQuestionId);
 
@@ -220,9 +259,9 @@ export const Survey: React.FC<SurveyProps> = ({
       visitedQuestions: newVisitedQuestions,
       answers: newAnswers,
       canGoBack: newVisitedQuestions.length > 0,
-      canGoNext: true
+      canGoNext: true,
     }));
-    
+
     setValidationError('');
   }, [currentState]);
 
@@ -230,19 +269,29 @@ export const Survey: React.FC<SurveyProps> = ({
     const question = getCurrentQuestion();
     if (!question) {
       return (
-        <div style={{ 
-          textAlign: 'center',
-          color: theme.textColor 
-        }}>
-          <h2 style={{ 
-            fontSize: '24px',
-            fontWeight: 400,
-            margin: 0,
-            color: theme.textColor 
-          }}>
+        <div
+          style={{
+            textAlign: 'center',
+            color: theme.textColor,
+          }}
+        >
+          <h2
+            style={{
+              fontSize: '24px',
+              fontWeight: 400,
+              margin: 0,
+              color: theme.textColor,
+            }}
+          >
             Thank you for participating!
           </h2>
-          <p style={{ fontSize: '16px', marginTop: '16px', color: theme.textColor }}>
+          <p
+            style={{
+              fontSize: '16px',
+              marginTop: '16px',
+              color: theme.textColor,
+            }}
+          >
             Your answers have been saved successfully.
           </p>
         </div>
@@ -250,7 +299,8 @@ export const Survey: React.FC<SurveyProps> = ({
     }
 
     const currentAnswer = currentState.answers.get(question.id);
-    const questionNumber = config.questions.findIndex(q => q.id === question.id) + 1;
+    const questionNumber =
+      config.questions.findIndex(q => q.id === question.id) + 1;
 
     const questionIconStyle: React.CSSProperties = {
       display: 'inline-flex',
@@ -264,26 +314,24 @@ export const Survey: React.FC<SurveyProps> = ({
       fontSize: '16px',
       fontWeight: 'bold',
       marginRight: '16px',
-      marginBottom: '16px'
+      marginBottom: '16px',
     };
 
     const questionTitleStyle: React.CSSProperties = {
       display: 'flex',
       alignItems: 'flex-start',
-      marginBottom: '32px'
+      marginBottom: '32px',
     };
 
     const questionContentStyle: React.CSSProperties = {
-      flex: 1
+      flex: 1,
     };
 
     switch (question.type) {
       case 'text':
         return (
           <div style={questionTitleStyle}>
-            <div style={questionIconStyle}>
-              {questionNumber}
-            </div>
+            <div style={questionIconStyle}>{questionNumber}</div>
             <div style={questionContentStyle}>
               <TextQuestion
                 question={question}
@@ -298,9 +346,7 @@ export const Survey: React.FC<SurveyProps> = ({
       case 'choice':
         return (
           <div style={questionTitleStyle}>
-            <div style={questionIconStyle}>
-              {questionNumber}
-            </div>
+            <div style={questionIconStyle}>{questionNumber}</div>
             <div style={questionContentStyle}>
               <ChoiceQuestion
                 question={question}
@@ -315,9 +361,7 @@ export const Survey: React.FC<SurveyProps> = ({
       case 'feedback':
         return (
           <div style={questionTitleStyle}>
-            <div style={questionIconStyle}>
-              {questionNumber}
-            </div>
+            <div style={questionIconStyle}>{questionNumber}</div>
             <div style={questionContentStyle}>
               <FeedbackForm
                 question={question}
@@ -391,34 +435,38 @@ export const Survey: React.FC<SurveyProps> = ({
     return (
       <div style={{ marginTop: '15px' }}>
         {validationError && (
-          <div style={{
-            color: '#ffffff',
-            fontSize: '14px',
-            marginBottom: '16px',
-            padding: '12px 16px',
-            backgroundColor: 'rgb(139 57 19)',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-            position: 'relative'
-          }}>
-            <AlertTriangle 
-              size={20} 
-              style={{ 
+          <div
+            style={{
+              color: '#ffffff',
+              fontSize: '14px',
+              marginBottom: '16px',
+              padding: '12px 16px',
+              backgroundColor: 'rgb(139 57 19)',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+              position: 'relative',
+            }}
+          >
+            <AlertTriangle
+              size={20}
+              style={{
                 marginRight: '12px',
-                flexShrink: 0
-              }} 
+                flexShrink: 0,
+              }}
             />
             {validationError}
           </div>
         )}
-        
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start'
-        }}>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+          }}
+        >
           {currentState.canGoBack ? (
             <button onClick={handleBack} style={backButtonStyle}>
               Back
@@ -430,10 +478,10 @@ export const Survey: React.FC<SurveyProps> = ({
           <button
             onClick={handleNext}
             style={okButtonStyle}
-            onMouseEnter={(e) => {
+            onMouseEnter={e => {
               e.currentTarget.style.backgroundColor = '#3A8BE6';
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={e => {
               e.currentTarget.style.backgroundColor = theme.accentColor;
             }}
           >
@@ -445,7 +493,7 @@ export const Survey: React.FC<SurveyProps> = ({
   };
 
   return (
-    <div 
+    <div
       className="survey-container"
       style={{
         height: '100vh',
@@ -456,18 +504,19 @@ export const Survey: React.FC<SurveyProps> = ({
         justifyContent: 'center',
         backgroundColor: theme.backgroundColor,
         color: theme.textColor,
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         padding: '40px',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
       }}
     >
-      <div 
+      <div
         className="survey-content"
         style={{
           width: '100%',
           maxWidth: '600px',
           maxHeight: '100%',
-          overflow: 'auto'
+          overflow: 'auto',
         }}
       >
         {renderCurrentQuestion()}

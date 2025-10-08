@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ChoiceQuestion as ChoiceQuestionType, UserAnswer, SurveyTheme } from '../../types/index.js';
+import {
+  ChoiceQuestion as ChoiceQuestionType,
+  UserAnswer,
+  SurveyTheme,
+} from '../../types/index.js';
 
 interface ChoiceQuestionProps {
   question: ChoiceQuestionType;
@@ -11,8 +15,8 @@ interface ChoiceQuestionProps {
 function lightenColor(color: string, amount: number) {
   const num = parseInt(color.replace('#', ''), 16);
   const r = (num >> 16) + amount;
-  const b = ((num >> 8) & 0x00FF) + amount;
-  const g = (num & 0x0000FF) + amount;
+  const b = ((num >> 8) & 0x00ff) + amount;
+  const g = (num & 0x0000ff) + amount;
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
@@ -20,7 +24,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
   question,
   currentAnswer,
   theme,
-  onAnswer
+  onAnswer,
 }) => {
   const [selectedValues, setSelectedValues] = useState<Set<string>>(new Set());
   const [otherValue, setOtherValue] = useState<string>('');
@@ -29,7 +33,9 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
     if (currentAnswer) {
       if (Array.isArray(currentAnswer.value)) {
         setSelectedValues(new Set(currentAnswer.value));
-        const otherVal = currentAnswer.value.find(v => !question.options.some(o => o.value === v));
+        const otherVal = currentAnswer.value.find(
+          v => !question.options.some(o => o.value === v)
+        );
         if (otherVal) {
           setOtherValue(String(otherVal));
         }
@@ -45,18 +51,25 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
       if (otherValue.trim() && question.allowOther) {
         values.push(otherValue.trim());
       }
-      
+
       onAnswer({
         questionId: question.id,
         value: question.multiple ? values : values[0] || '',
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }
-  }, [selectedValues, otherValue, question.id, question.multiple, question.allowOther, onAnswer]);
+  }, [
+    selectedValues,
+    otherValue,
+    question.id,
+    question.multiple,
+    question.allowOther,
+    onAnswer,
+  ]);
 
   const handleOptionChange = (optionValue: string, checked: boolean) => {
     const newSelected = new Set(selectedValues);
-    
+
     if (question.multiple) {
       if (checked) {
         newSelected.add(optionValue);
@@ -69,7 +82,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
         newSelected.add(optionValue);
       }
     }
-    
+
     setSelectedValues(newSelected);
   };
 
@@ -83,13 +96,13 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
     cursor: 'pointer',
     border: 'none',
     transition: 'all 0.2s ease',
-    color: '#ffffff'
+    color: '#ffffff',
   };
 
   const selectedOptionStyle: React.CSSProperties = {
     ...optionStyle,
     backgroundColor: `${theme.backgroundColor}`,
-    border: `2px solid ${theme.accentColor}`
+    border: `2px solid ${theme.accentColor}`,
   };
 
   const letterStyle: React.CSSProperties = {
@@ -109,7 +122,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
   const letterStyleSelected: React.CSSProperties = {
     ...letterStyle,
     backgroundColor: theme.accentColor,
-    color: theme.backgroundColor
+    color: theme.backgroundColor,
   };
 
   const inputStyle: React.CSSProperties = {
@@ -121,26 +134,30 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
     color: '#ffffff',
     fontSize: '26px',
     outline: 'none',
-    fontFamily: 'inherit'
+    fontFamily: 'inherit',
   };
 
   return (
     <div>
-      <h2 style={{
-        fontSize: '24px',
-        fontWeight: 400,
-        margin: '0 0 24px 0',
-        color: theme.textColor
-      }}>
+      <h2
+        style={{
+          fontSize: '24px',
+          fontWeight: 400,
+          margin: '0 0 24px 0',
+          color: theme.textColor,
+        }}
+      >
         {question.title}
       </h2>
 
       {question.description && (
-        <p style={{
-          fontSize: '16px',
-          margin: '0 0 24px 0',
-          color: theme.textColor
-        }}>
+        <p
+          style={{
+            fontSize: '16px',
+            margin: '0 0 24px 0',
+            color: theme.textColor,
+          }}
+        >
           {question.description}
         </p>
       )}
@@ -149,7 +166,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
         {question.options.map((option, index) => {
           const letter = String.fromCharCode(65 + index); // A, B, C, D, E...
           const isSelected = selectedValues.has(option.value);
-          
+
           return (
             <div
               key={option.id}
@@ -161,19 +178,23 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
                 name={question.multiple ? `choice_${question.id}` : 'choice'}
                 value={option.value}
                 checked={isSelected}
-                onChange={(e) => handleOptionChange(option.value, e.target.checked)}
+                onChange={e =>
+                  handleOptionChange(option.value, e.target.checked)
+                }
                 style={{
-                  display: 'none' // Hide the default input
+                  display: 'none', // Hide the default input
                 }}
               />
               <div style={isSelected ? letterStyleSelected : letterStyle}>
                 {letter}
               </div>
-              <span style={{
-                fontSize: '16px',
-                color: '#ffffff',
-                flex: 1
-              }}>
+              <span
+                style={{
+                  fontSize: '16px',
+                  color: '#ffffff',
+                  flex: 1,
+                }}
+              >
                 {option.label}
               </span>
             </div>
@@ -181,23 +202,27 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
         })}
 
         {question.allowOther && (
-          <div style={{
-            marginTop: '24px',
-            padding: '16px 20px',
-            backgroundColor: '#2a2a2a',
-            borderRadius: '8px'
-          }}>
-            <div style={{
-              fontSize: '14px',
-              color: '#cccccc',
-              marginBottom: '12px'
-            }}>
+          <div
+            style={{
+              marginTop: '24px',
+              padding: '16px 20px',
+              backgroundColor: '#2a2a2a',
+              borderRadius: '8px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '14px',
+                color: '#cccccc',
+                marginBottom: '12px',
+              }}
+            >
               Other option:
             </div>
             <input
               type="text"
               value={otherValue}
-              onChange={(e) => setOtherValue(e.target.value)}
+              onChange={e => setOtherValue(e.target.value)}
               placeholder="Specify your option"
               style={inputStyle}
             />

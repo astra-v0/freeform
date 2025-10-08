@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FeedbackFormQuestion, UserAnswer, SurveyTheme } from '../../types/index.js';
+import {
+  FeedbackFormQuestion,
+  UserAnswer,
+  SurveyTheme,
+} from '../../types/index.js';
 
 function hexToRgba(hex: string, alpha: number): string {
   const r = parseInt(hex.slice(1, 3), 16);
@@ -19,13 +23,13 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
   question,
   currentAnswer,
   theme,
-  onAnswer
+  onAnswer,
 }) => {
   const [formData, setFormData] = useState<Record<string, string>>({
     firstName: '',
     lastName: '',
     email: '',
-    company: ''
+    company: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -37,13 +41,19 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
   };
 
   // Helper function to check if a field is required
-  const isFieldRequired = (fieldName: keyof typeof question.fields): boolean => {
+  const isFieldRequired = (
+    fieldName: keyof typeof question.fields
+  ): boolean => {
     const field = question.fields[fieldName];
     return typeof field === 'boolean' ? false : (field.required ?? false);
   };
 
   useEffect(() => {
-    if (currentAnswer && typeof currentAnswer.value === 'object' && !Array.isArray(currentAnswer.value)) {
+    if (
+      currentAnswer &&
+      typeof currentAnswer.value === 'object' &&
+      !Array.isArray(currentAnswer.value)
+    ) {
       setFormData(currentAnswer.value as Record<string, string>);
     }
   }, [currentAnswer]);
@@ -54,63 +64,67 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
       onAnswer({
         questionId: question.id,
         value: formData,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }
   }, [formData, question.id, onAnswer]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
+
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
   const unfocusedColor = hexToRgba(theme.accentColor, 0.7);
-  
+
   const getInputStyle = (fieldName: string): React.CSSProperties => ({
     width: '100%',
     padding: '12px 0',
     border: 'none',
-    borderBottom: focusedField === fieldName 
-      ? `1px solid ${theme.accentColor}`
-      : `1px solid ${unfocusedColor}`,
-    boxShadow: focusedField === fieldName 
-      ? `0 2px 0 0 ${theme.accentColor}` 
-      : 'none',
+    borderBottom:
+      focusedField === fieldName
+        ? `1px solid ${theme.accentColor}`
+        : `1px solid ${unfocusedColor}`,
+    boxShadow:
+      focusedField === fieldName ? `0 2px 0 0 ${theme.accentColor}` : 'none',
     background: 'transparent',
     color: '#ffffff',
     fontSize: '26px',
     outline: 'none',
     fontFamily: 'inherit',
-    transition: 'box-shadow 0.2s ease, border-bottom-color 0.2s ease'
+    transition: 'box-shadow 0.2s ease, border-bottom-color 0.2s ease',
   });
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
     marginBottom: '8px',
     fontSize: '14px',
-    color: '#cccccc'
+    color: '#cccccc',
   };
 
   return (
     <div>
-      <h2 style={{
-        fontSize: '24px',
-        fontWeight: 400,
-        margin: '0 0 24px 0',
-        color: theme.textColor
-      }}>
+      <h2
+        style={{
+          fontSize: '24px',
+          fontWeight: 400,
+          margin: '0 0 24px 0',
+          color: theme.textColor,
+        }}
+      >
         {question.title}
       </h2>
 
       {question.description && (
-        <p style={{
-          fontSize: '16px',
-          margin: '0 0 24px 0',
-          color: theme.textColor
-        }}>
+        <p
+          style={{
+            fontSize: '16px',
+            margin: '0 0 24px 0',
+            color: theme.textColor,
+          }}
+        >
           {question.description}
         </p>
       )}
@@ -119,19 +133,24 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         {isFieldEnabled('firstName') && (
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>
-              First Name{isFieldRequired('firstName') && <span style={{ color: theme.accentColor }}> *</span>}
+              First Name
+              {isFieldRequired('firstName') && (
+                <span style={{ color: theme.accentColor }}> *</span>
+              )}
             </label>
             <input
               type="text"
               value={formData.firstName}
-              onChange={(e) => handleInputChange('firstName', e.target.value)}
+              onChange={e => handleInputChange('firstName', e.target.value)}
               onFocus={() => setFocusedField('firstName')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter your first name"
               style={getInputStyle('firstName')}
             />
             {errors.firstName && (
-              <div style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}>
+              <div
+                style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}
+              >
                 {errors.firstName}
               </div>
             )}
@@ -141,19 +160,24 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         {isFieldEnabled('lastName') && (
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>
-              Last Name{isFieldRequired('lastName') && <span style={{ color: theme.accentColor }}> *</span>}
+              Last Name
+              {isFieldRequired('lastName') && (
+                <span style={{ color: theme.accentColor }}> *</span>
+              )}
             </label>
             <input
               type="text"
               value={formData.lastName}
-              onChange={(e) => handleInputChange('lastName', e.target.value)}
+              onChange={e => handleInputChange('lastName', e.target.value)}
               onFocus={() => setFocusedField('lastName')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter your last name"
               style={getInputStyle('lastName')}
             />
             {errors.lastName && (
-              <div style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}>
+              <div
+                style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}
+              >
                 {errors.lastName}
               </div>
             )}
@@ -163,19 +187,24 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         {isFieldEnabled('email') && (
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>
-              Email{isFieldRequired('email') && <span style={{ color: theme.accentColor }}> *</span>}
+              Email
+              {isFieldRequired('email') && (
+                <span style={{ color: theme.accentColor }}> *</span>
+              )}
             </label>
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
+              onChange={e => handleInputChange('email', e.target.value)}
               onFocus={() => setFocusedField('email')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter your email"
               style={getInputStyle('email')}
             />
             {errors.email && (
-              <div style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}>
+              <div
+                style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}
+              >
                 {errors.email}
               </div>
             )}
@@ -185,19 +214,24 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         {isFieldEnabled('company') && (
           <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>
-              Company{isFieldRequired('company') && <span style={{ color: theme.accentColor }}> *</span>}
+              Company
+              {isFieldRequired('company') && (
+                <span style={{ color: theme.accentColor }}> *</span>
+              )}
             </label>
             <input
               type="text"
               value={formData.company}
-              onChange={(e) => handleInputChange('company', e.target.value)}
+              onChange={e => handleInputChange('company', e.target.value)}
               onFocus={() => setFocusedField('company')}
               onBlur={() => setFocusedField(null)}
               placeholder="Enter company name"
               style={getInputStyle('company')}
             />
             {errors.company && (
-              <div style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}>
+              <div
+                style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}
+              >
                 {errors.company}
               </div>
             )}
