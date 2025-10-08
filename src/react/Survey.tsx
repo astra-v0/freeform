@@ -10,6 +10,14 @@ interface SurveyProps {
   onAnswer?: (answer: UserAnswer) => void;
 }
 
+function lightenColor(color: string, amount: number) {
+  const num = parseInt(color.replace('#', ''), 16);
+  const r = (num >> 16) + amount;
+  const b = ((num >> 8) & 0x00FF) + amount;
+  const g = (num & 0x0000FF) + amount;
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
 export const Survey: React.FC<SurveyProps> = ({ 
   config, 
   onComplete, 
@@ -270,6 +278,7 @@ export const Survey: React.FC<SurveyProps> = ({
                 theme={theme}
                 onAnswer={handleAnswerChange}
               />
+              {renderNavigation()}
             </div>
           </div>
         );
@@ -286,6 +295,7 @@ export const Survey: React.FC<SurveyProps> = ({
                 theme={theme}
                 onAnswer={handleAnswerChange}
               />
+              {renderNavigation()}
             </div>
           </div>
         );
@@ -302,6 +312,7 @@ export const Survey: React.FC<SurveyProps> = ({
                 theme={theme}
                 onAnswer={handleAnswerChange}
               />
+              {renderNavigation()}
             </div>
           </div>
         );
@@ -324,22 +335,20 @@ export const Survey: React.FC<SurveyProps> = ({
       borderRadius: '8px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
-      marginTop: '48px'
     };
 
     const backButtonStyle: React.CSSProperties = {
       background: 'transparent',
       color: '#cccccc',
-      border: 'none',
-      padding: '12px 0',
+      border: `1px solid ${lightenColor(theme.backgroundColor, 50)}`,
+      borderRadius: '8px',
+      padding: '12px 32px',
       fontSize: '16px',
       cursor: 'pointer',
-      textDecoration: 'underline',
-      marginTop: '48px'
     };
 
     return (
-      <div>
+      <div style={{ marginTop: '15px' }}>
         {validationError && (
           <div style={{
             color: '#ff6b6b',
@@ -385,10 +394,32 @@ export const Survey: React.FC<SurveyProps> = ({
   };
 
   return (
-    <div className="survey-container">
-      <div className="survey-content">
+    <div 
+      className="survey-container"
+      style={{
+        height: '100vh',
+        width: '100vw',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.backgroundColor,
+        color: theme.textColor,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        padding: '40px',
+        boxSizing: 'border-box'
+      }}
+    >
+      <div 
+        className="survey-content"
+        style={{
+          width: '100%',
+          maxWidth: '600px',
+          maxHeight: '100%',
+          overflow: 'auto'
+        }}
+      >
         {renderCurrentQuestion()}
-        {renderNavigation()}
       </div>
     </div>
   );
