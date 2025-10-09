@@ -1,5 +1,5 @@
 {
-  "name": "survey-builder-react-demo",
+  "name": "freeform-react-demo",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@astra-v0/survey-builder": "file:../dist",
+    "@astra-v0/freeform": "github:astra-v0/freeform",
     "lucide-react": "^0.545.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

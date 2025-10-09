@@ -1,5 +1,5 @@
 {
-  "name": "@astra-v0/survey-builder",
+  "name": "@astra-v0/freeform",
   "version": "1.0.0",
   "description": "Programmatic survey builder inspired by Typeform style",
   "main": "dist/index.js",
@@ -29,6 +29,14 @@
   ],
   "author": "Your Name",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/astra-v0/freeform.git"
+  },
+  "homepage": "https://github.com/astra-v0/freeform#readme",
+  "bugs": {
+    "url": "https://github.com/astra-v0/freeform/issues"
+  },
   "devDependencies": {
     "@types/jest": "^29.0.0",
     "@types/node": "^20.0.0",
