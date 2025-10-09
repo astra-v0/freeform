@@ -33,8 +33,11 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
   useEffect(() => {
     if (currentAnswer && typeof currentAnswer.value === 'string') {
       setValue(currentAnswer.value);
+    } else {
+      // Reset to empty when no answer exists (e.g., new question)
+      setValue('');
     }
-  }, [currentAnswer]);
+  }, [currentAnswer, question.id]);
 
   useEffect(() => {
     if (value.trim()) {
@@ -71,6 +74,37 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
     if (question.maxLength && trimmedValue.length > question.maxLength) {
       setError(`Maximum length: ${question.maxLength} characters`);
       return;
+    }
+
+    // Validation based on type
+    if (question.validation && trimmedValue) {
+      if (question.validation.type === 'number') {
+        const numValue = parseFloat(trimmedValue);
+        if (isNaN(numValue)) {
+          setError(question.validation.errorMessage || 'Please enter a valid number');
+          return;
+        }
+        if (question.validation.min !== undefined && numValue < question.validation.min) {
+          setError(question.validation.errorMessage || `Value must be at least ${question.validation.min}`);
+          return;
+        }
+        if (question.validation.max !== undefined && numValue > question.validation.max) {
+          setError(question.validation.errorMessage || `Value must be at most ${question.validation.max}`);
+          return;
+        }
+      } else if (question.validation.type === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(trimmedValue)) {
+          setError(question.validation.errorMessage || 'Please enter a valid email address');
+          return;
+        }
+      } else if (question.validation.pattern) {
+        const regex = new RegExp(question.validation.pattern);
+        if (!regex.test(trimmedValue)) {
+          setError(question.validation.errorMessage || 'Invalid format');
+          return;
+        }
+      }
     }
 
     setError('');

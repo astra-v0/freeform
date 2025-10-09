@@ -95,6 +95,30 @@ export const Survey: React.FC<SurveyProps> = ({
       }
     }
 
+    // Validate text question with validation rules
+    if (currentQuestion?.type === 'text' && pendingAnswer && typeof pendingAnswer.value === 'string') {
+      const textQuestion = currentQuestion as any;
+      const trimmedValue = pendingAnswer.value.trim();
+      
+      if (textQuestion.validation && trimmedValue) {
+        if (textQuestion.validation.type === 'number') {
+          const numValue = parseFloat(trimmedValue);
+          if (isNaN(numValue)) {
+            setValidationError(textQuestion.validation.errorMessage || 'Please enter a valid number');
+            return;
+          }
+          if (textQuestion.validation.min !== undefined && numValue < textQuestion.validation.min) {
+            setValidationError(textQuestion.validation.errorMessage || `Value must be at least ${textQuestion.validation.min}`);
+            return;
+          }
+          if (textQuestion.validation.max !== undefined && numValue > textQuestion.validation.max) {
+            setValidationError(textQuestion.validation.errorMessage || `Value must be at most ${textQuestion.validation.max}`);
+            return;
+          }
+        }
+      }
+    }
+
     // Validate feedback form required fields
     if (currentQuestion?.type === 'feedback' && pendingAnswer) {
       const feedbackQuestion = currentQuestion as any;
@@ -126,6 +150,17 @@ export const Survey: React.FC<SurveyProps> = ({
         );
         return;
       }
+
+      // Validate email format if email field is enabled and has a value
+      const emailField = feedbackQuestion.fields.email;
+      const isEmailEnabled = typeof emailField === 'boolean' ? emailField : emailField.enabled;
+      if (isEmailEnabled && formData.email && formData.email.trim()) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email.trim())) {
+          setValidationError('Please enter a valid email address');
+          return;
+        }
+      }
     }
 
     if (!pendingAnswer || !pendingAnswer.value) {
@@ -153,6 +188,11 @@ export const Survey: React.FC<SurveyProps> = ({
           canGoBack: true,
           canGoNext: true,
         }));
+        
+        // Load the answer for the next question if it exists
+        const nextAnswer = newAnswers.get(nextQuestionId);
+        setPendingAnswer(nextAnswer || null);
+        
         setValidationError('');
       } else {
         const response: SurveyResponse = {
@@ -199,7 +239,9 @@ export const Survey: React.FC<SurveyProps> = ({
         canGoNext: true,
       }));
 
-      setPendingAnswer(null);
+      // Load the answer for the next question if it exists (user went back and forward)
+      const nextAnswer = newAnswers.get(nextQuestionId);
+      setPendingAnswer(nextAnswer || null);
 
       if (onAnswer) {
         onAnswer(answer);
@@ -250,14 +292,15 @@ export const Survey: React.FC<SurveyProps> = ({
       currentState.visitedQuestions[currentState.visitedQuestions.length - 1];
     const newVisitedQuestions = currentState.visitedQuestions.slice(0, -1);
 
-    const newAnswers = new Map(currentState.answers);
-    newAnswers.delete(currentState.currentQuestionId);
+    // Don't delete the answer, keep it for when user comes back
+    // Just restore the pending answer from the previous question
+    const previousAnswer = currentState.answers.get(previousQuestionId);
+    setPendingAnswer(previousAnswer || null);
 
     setCurrentState(prev => ({
       ...prev,
       currentQuestionId: previousQuestionId,
       visitedQuestions: newVisitedQuestions,
-      answers: newAnswers,
       canGoBack: newVisitedQuestions.length > 0,
       canGoNext: true,
     }));

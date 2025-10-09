@@ -21,6 +21,15 @@ export interface SimpleQuestion {
 
   multiline?: boolean;
   maxLength?: number;
+  
+  // Validation for text fields
+  validation?: {
+    type?: 'text' | 'number' | 'email';
+    min?: number;
+    max?: number;
+    pattern?: string;
+    errorMessage?: string;
+  };
 
   options?: string[] | Array<{ label: string; value?: string }>;
   multiple?: boolean;
@@ -69,6 +78,7 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
         placeholder: q.placeholder,
         multiline: q.multiline,
         maxLength: q.maxLength,
+        validation: q.validation,
         required: q.required,
       };
     }

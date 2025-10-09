@@ -3,69 +3,87 @@ import { SimpleSurvey, SimpleQuestion } from '../../src/react/SimpleSurvey';
 function App() {
   const questions: SimpleQuestion[] = [
     {
-      title: 'Please describe your professional background and area of expertise (e.g., endocrinology, bioinformatics, data science, longevity research).',
+      title: '👽 Greetings, Earthling! Please state your species and place of origin.',
       type: 'text',
-      multiline: true,
-      placeholder: 'Type your answer here...',
+      multiline: false,
+      placeholder: 'e.g., Human, Earth (Alaska, USA)',
       required: true
     },
     {
-      title: 'How mature do you think AI tools are for real clinical or research use in your field?',
+      title: 'How many planetary cycles ("years") have you experienced since your emergence?',
+      type: 'text',
+      placeholder: 'Enter your age in years',
+      required: true,
+      validation: {
+        type: 'number',
+        min: 0,
+        max: 150,
+        errorMessage: 'Please enter a valid age between 0 and 150'
+      }
+    },
+    {
+      title: 'What is your primary function on your home planet?',
       type: 'choice',
       options: [
-        'Not mature',
-        'Somewhat mature', 
-        'Moderately mature',
-        'Very mature',
-        'Fully mature'
+        'Knowledge Accumulation (Student/Researcher)',
+        'Resource Acquisition (Worker/Business)',
+        'Offspring Nurturing (Parent/Caregiver)',
+        'Planetary Leadership (Government/Administrator)',
+        'Other'
       ],
       required: true
     },
     {
-      title: 'This survey is confidential and will be used only for research purposes.',
-      type: 'info',
-      description: 'Your responses will not be used for any other purpose. We will not share your data with any third parties.'
-    },
-    {
-      title: 'Would you be open to participating in collaborative projects, providing feedback, or advising Astra\'s proof-of-concept studies?*',
+      title: 'If you were given the opportunity, would you willingly communicate with civilizations from other galaxies?',
       type: 'choice',
       options: [
-        'Yes',
-        'No',
-        'Maybe, please contact me'
+        'Definitely',
+        'Maybe, after knowing their intentions',
+        'No, I prefer intergalactic privacy',
+        'Unsure'
       ],
       required: true
     },
     {
-      title: 'Please provide your contact information. Fields marked with * are required.',
+      title: 'We have observed the phenomenon you call "pizza." Please rate its significance to your culture.',
+      type: 'choice',
+      options: [
+        'Vital for survival',
+        'Highly valued',
+        'Occasionally consumed',
+        'Unknown/Not important'
+      ],
+      required: false
+    },
+    {
+      title: 'For continuing communication, please provide your cosmic identification signals. Fields marked with * are required.',
       type: 'feedback',
       fields: {
         firstName: { enabled: true, required: true },
         lastName: { enabled: true, required: false },
-        email: { enabled: true, required: true },
-        company: { enabled: true, required: false }
+        email: { enabled: true, required: true }
       },
       required: true
     },
     {
-      title: 'Thanks for your time! Share this survey with your colleagues!',
+      title: 'Thank you, Earthling! Share this transmission with your planetary network!',
       type: 'social',
       socials: [
         {
-          name: 'Facebook',
+          name: 'Universal Spacebook',
           url: 'https://www.facebook.com/sharer/sharer.php?u=https://www.google.com'
         },
         {
-          name: 'Twitter',
+          name: 'Interstellar Twixt',
           url: 'https://www.twitter.com/share?url=https://www.google.com'
         },
         {
-          name: 'LinkedIn',
+          name: 'GalacticLink',
           url: 'https://www.linkedin.com/shareArticle?url=https://www.google.com'
         },
         {
-          name: 'Email',
-          url: 'mailto:?subject=Check out this survey&body=I found this survey and thought you might be interested: https://www.google.com'
+          name: 'Wormhole Mail',
+          url: 'mailto:?subject=Participate in Intergalactic Survey&body=Alien abductors want to know more about you: https://www.google.com'
         }
       ]
     }

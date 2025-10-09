@@ -55,8 +55,16 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
       !Array.isArray(currentAnswer.value)
     ) {
       setFormData(currentAnswer.value as Record<string, string>);
+    } else {
+      // Reset form when no answer exists (e.g., new question)
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        company: '',
+      });
     }
-  }, [currentAnswer]);
+  }, [currentAnswer, question.id]);
 
   useEffect(() => {
     const hasData = Object.values(formData).some(v => v.trim());
@@ -69,10 +77,22 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     }
   }, [formData, question.id, onAnswer]);
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
 
-    if (errors[field]) {
+    // Validate email on change
+    if (field === 'email' && value.trim()) {
+      if (!validateEmail(value)) {
+        setErrors(prev => ({ ...prev, [field]: 'Please enter a valid email address' }));
+      } else {
+        setErrors(prev => ({ ...prev, [field]: '' }));
+      }
+    } else if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };

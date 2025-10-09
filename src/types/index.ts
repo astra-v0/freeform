@@ -17,6 +17,13 @@ export interface TextQuestion extends QuestionBase {
   placeholder?: string;
   multiline?: boolean;
   maxLength?: number;
+  validation?: {
+    type?: 'text' | 'number' | 'email';
+    min?: number;
+    max?: number;
+    pattern?: string;
+    errorMessage?: string;
+  };
 }
 
 export interface ChoiceOption {

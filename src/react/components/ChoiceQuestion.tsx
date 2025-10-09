@@ -42,8 +42,12 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
       } else if (typeof currentAnswer.value === 'string') {
         setSelectedValues(new Set([currentAnswer.value]));
       }
+    } else {
+      // Reset selection when no answer exists (e.g., new question)
+      setSelectedValues(new Set());
+      setOtherValue('');
     }
-  }, [currentAnswer, question.options]);
+  }, [currentAnswer, question.id]);
 
   useEffect(() => {
     if (selectedValues.size > 0 || otherValue.trim()) {
