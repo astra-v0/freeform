@@ -4,6 +4,16 @@ Lightweight survey builder with Typeform-style UI.
 
 [![React Demo](/assets/demo.gif)](demo-react/)
 
+## Features
+
+- Text field
+- Choice field
+- Feedback field
+- Info/notice field
+- Social field
+
+[![React Demo](/assets/demo2.gif)](demo-react/)
+
 ## Installation
 
 ```bash
