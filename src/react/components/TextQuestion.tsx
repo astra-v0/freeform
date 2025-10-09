@@ -154,7 +154,6 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
                   gap: '4px',
                 }}
               >
-                <span>Shift ↑ + Enter ↵ to make a line break</span>
               </div>
             </div>
           ) : (
