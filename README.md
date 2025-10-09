@@ -2,6 +2,8 @@
 
 Lightweight survey builder with Typeform-style UI.
 
+[![React Demo](/assets/demo.gif)](demo-react/)
+
 ## Installation
 
 ```bash
@@ -42,4 +44,4 @@ function App() {
 
 ## License
 
-Project 
+[MIT](LICENSE)
