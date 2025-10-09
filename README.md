@@ -6,18 +6,18 @@ Lightweight survey builder with Typeform-style UI.
 
 ## Features
 
-- Text field
-- Choice field
-- Feedback field
-- Info/notice field
-- Social field
+- Text
+- Choice
+- Feedback  
+- Info/notice
+- Social
 
 [![React Demo](/assets/demo2.gif)](demo-react/)
 
 ## Installation
 
 ```bash
-npm install github:astra-v0/freeform
+npm install @astra-v0/freeform
 ```
 
 ## Usage
