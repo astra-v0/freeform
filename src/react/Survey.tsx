@@ -522,10 +522,10 @@ export const Survey: React.FC<SurveyProps> = ({
             onClick={handleNext}
             style={okButtonStyle}
             onMouseEnter={e => {
-              e.currentTarget.style.backgroundColor = '#3A8BE6';
+              // e.currentTarget.style.fontWeight = '600';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.backgroundColor = theme.accentColor;
+              // e.currentTarget.style.fontWeight = '500';
             }}
           >
             OK
