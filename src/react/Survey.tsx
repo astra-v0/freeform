@@ -96,23 +96,42 @@ export const Survey: React.FC<SurveyProps> = ({
     }
 
     // Validate text question with validation rules
-    if (currentQuestion?.type === 'text' && pendingAnswer && typeof pendingAnswer.value === 'string') {
+    if (
+      currentQuestion?.type === 'text' &&
+      pendingAnswer &&
+      typeof pendingAnswer.value === 'string'
+    ) {
       const textQuestion = currentQuestion as any;
       const trimmedValue = pendingAnswer.value.trim();
-      
+
       if (textQuestion.validation && trimmedValue) {
         if (textQuestion.validation.type === 'number') {
           const numValue = parseFloat(trimmedValue);
           if (isNaN(numValue)) {
-            setValidationError(textQuestion.validation.errorMessage || 'Please enter a valid number');
+            setValidationError(
+              textQuestion.validation.errorMessage ||
+                'Please enter a valid number'
+            );
             return;
           }
-          if (textQuestion.validation.min !== undefined && numValue < textQuestion.validation.min) {
-            setValidationError(textQuestion.validation.errorMessage || `Value must be at least ${textQuestion.validation.min}`);
+          if (
+            textQuestion.validation.min !== undefined &&
+            numValue < textQuestion.validation.min
+          ) {
+            setValidationError(
+              textQuestion.validation.errorMessage ||
+                `Value must be at least ${textQuestion.validation.min}`
+            );
             return;
           }
-          if (textQuestion.validation.max !== undefined && numValue > textQuestion.validation.max) {
-            setValidationError(textQuestion.validation.errorMessage || `Value must be at most ${textQuestion.validation.max}`);
+          if (
+            textQuestion.validation.max !== undefined &&
+            numValue > textQuestion.validation.max
+          ) {
+            setValidationError(
+              textQuestion.validation.errorMessage ||
+                `Value must be at most ${textQuestion.validation.max}`
+            );
             return;
           }
         }
@@ -153,7 +172,8 @@ export const Survey: React.FC<SurveyProps> = ({
 
       // Validate email format if email field is enabled and has a value
       const emailField = feedbackQuestion.fields.email;
-      const isEmailEnabled = typeof emailField === 'boolean' ? emailField : emailField.enabled;
+      const isEmailEnabled =
+        typeof emailField === 'boolean' ? emailField : emailField.enabled;
       if (isEmailEnabled && formData.email && formData.email.trim()) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email.trim())) {
@@ -188,11 +208,11 @@ export const Survey: React.FC<SurveyProps> = ({
           canGoBack: true,
           canGoNext: true,
         }));
-        
+
         // Load the answer for the next question if it exists
         const nextAnswer = newAnswers.get(nextQuestionId);
         setPendingAnswer(nextAnswer || null);
-        
+
         setValidationError('');
       } else {
         const response: SurveyResponse = {
@@ -521,11 +541,11 @@ export const Survey: React.FC<SurveyProps> = ({
           <button
             onClick={handleNext}
             style={okButtonStyle}
-            onMouseEnter={e => {
-              // e.currentTarget.style.fontWeight = '600';
+            onMouseEnter={_e => {
+              // _e.currentTarget.style.fontWeight = '600';
             }}
-            onMouseLeave={e => {
-              // e.currentTarget.style.fontWeight = '500';
+            onMouseLeave={_e => {
+              // _e.currentTarget.style.fontWeight = '500';
             }}
           >
             OK

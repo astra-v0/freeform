@@ -21,7 +21,7 @@ export interface SimpleQuestion {
 
   multiline?: boolean;
   maxLength?: number;
-  
+
   // Validation for text fields
   validation?: {
     type?: 'text' | 'number' | 'email';

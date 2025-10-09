@@ -88,7 +88,10 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     // Validate email on change
     if (field === 'email' && value.trim()) {
       if (!validateEmail(value)) {
-        setErrors(prev => ({ ...prev, [field]: 'Please enter a valid email address' }));
+        setErrors(prev => ({
+          ...prev,
+          [field]: 'Please enter a valid email address',
+        }));
       } else {
         setErrors(prev => ({ ...prev, [field]: '' }));
       }

@@ -81,21 +81,38 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
       if (question.validation.type === 'number') {
         const numValue = parseFloat(trimmedValue);
         if (isNaN(numValue)) {
-          setError(question.validation.errorMessage || 'Please enter a valid number');
+          setError(
+            question.validation.errorMessage || 'Please enter a valid number'
+          );
           return;
         }
-        if (question.validation.min !== undefined && numValue < question.validation.min) {
-          setError(question.validation.errorMessage || `Value must be at least ${question.validation.min}`);
+        if (
+          question.validation.min !== undefined &&
+          numValue < question.validation.min
+        ) {
+          setError(
+            question.validation.errorMessage ||
+              `Value must be at least ${question.validation.min}`
+          );
           return;
         }
-        if (question.validation.max !== undefined && numValue > question.validation.max) {
-          setError(question.validation.errorMessage || `Value must be at most ${question.validation.max}`);
+        if (
+          question.validation.max !== undefined &&
+          numValue > question.validation.max
+        ) {
+          setError(
+            question.validation.errorMessage ||
+              `Value must be at most ${question.validation.max}`
+          );
           return;
         }
       } else if (question.validation.type === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(trimmedValue)) {
-          setError(question.validation.errorMessage || 'Please enter a valid email address');
+          setError(
+            question.validation.errorMessage ||
+              'Please enter a valid email address'
+          );
           return;
         }
       } else if (question.validation.pattern) {
@@ -187,8 +204,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
                   alignItems: 'center',
                   gap: '4px',
                 }}
-              >
-              </div>
+              ></div>
             </div>
           ) : (
             <input
