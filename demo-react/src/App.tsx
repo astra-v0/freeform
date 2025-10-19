@@ -1,4 +1,4 @@
-import { SimpleSurvey, SimpleQuestion } from '../../src/react/SimpleSurvey';
+import { SimpleSurvey, SimpleQuestion, SimpleSurveyResult } from '../../src/react/SimpleSurvey';
 
 function App() {
   const questions: SimpleQuestion[] = [
@@ -89,7 +89,7 @@ function App() {
     }
   ];
 
-  const handleComplete = (result: any) => {
+  const handleComplete = (result: SimpleSurveyResult) => {
     console.log('Survey completed!', result);
     alert(`Thank you! Received answers:\n${JSON.stringify(result.answers, null, 2)}`);
   };

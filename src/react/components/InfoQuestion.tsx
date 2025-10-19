@@ -11,6 +11,7 @@ interface InfoQuestionProps {
   currentAnswer?: UserAnswer;
   theme: SurveyTheme;
   onAnswer: (answer: UserAnswer) => void;
+  isMobile?: boolean;
 }
 
 export const InfoQuestion: React.FC<InfoQuestionProps> = ({
@@ -18,6 +19,7 @@ export const InfoQuestion: React.FC<InfoQuestionProps> = ({
   currentAnswer: _currentAnswer,
   theme,
   onAnswer,
+  isMobile = false,
 }) => {
   // Auto-answer info questions immediately when they render
   React.useEffect(() => {
@@ -33,11 +35,11 @@ export const InfoQuestion: React.FC<InfoQuestionProps> = ({
       style={{
         display: 'flex',
         alignItems: 'flex-start',
-        padding: '24px',
+        padding: isMobile ? '16px' : '24px',
         backgroundColor: hexToRgba(theme.accentColor, 0.1),
         border: `1px solid ${hexToRgba(theme.accentColor, 0.3)}`,
-        borderRadius: '12px',
-        marginBottom: '24px',
+        borderRadius: isMobile ? '10px' : '12px',
+        marginBottom: isMobile ? '16px' : '24px',
       }}
     >
       <div
@@ -45,21 +47,21 @@ export const InfoQuestion: React.FC<InfoQuestionProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: '48px',
-          height: '48px',
+          width: isMobile ? '40px' : '48px',
+          height: isMobile ? '40px' : '48px',
           backgroundColor: theme.accentColor,
           borderRadius: '50%',
-          marginRight: '20px',
+          marginRight: isMobile ? '14px' : '20px',
           flexShrink: 0,
         }}
       >
-        <Info size={24} color="#1a1a1a" />
+        <Info size={isMobile ? 20 : 24} color="#1a1a1a" />
       </div>
 
       <div style={{ flex: 1 }}>
         <h3
           style={{
-            fontSize: '20px',
+            fontSize: isMobile ? '17px' : '20px',
             fontWeight: '500',
             margin: '0 0 8px 0',
             color: theme.textColor,
@@ -71,7 +73,7 @@ export const InfoQuestion: React.FC<InfoQuestionProps> = ({
         {question.description && (
           <p
             style={{
-              fontSize: '16px',
+              fontSize: isMobile ? '14px' : '16px',
               margin: '0',
               color: theme.textColor,
               opacity: 0.8,

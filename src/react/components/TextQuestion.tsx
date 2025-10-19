@@ -10,6 +10,7 @@ interface TextQuestionProps {
   currentAnswer?: UserAnswer;
   theme: SurveyTheme;
   onAnswer: (answer: UserAnswer) => void;
+  isMobile?: boolean;
 }
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -24,6 +25,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
   currentAnswer,
   theme,
   onAnswer,
+  isMobile = false,
 }) => {
   const [value, setValue] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -144,7 +146,7 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
     boxShadow: isFocused ? `0 1px 0 0 ${theme.accentColor}` : 'none',
     background: 'transparent',
     color: '#ffffff',
-    fontSize: '26px',
+    fontSize: isMobile ? '20px' : '26px',
     outline: 'none',
     fontFamily: 'inherit',
     resize: 'none',
@@ -156,9 +158,9 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
     <div>
       <h2
         style={{
-          fontSize: '24px',
+          fontSize: isMobile ? '18px' : '24px',
           fontWeight: 400,
-          margin: '0 0 24px 0',
+          margin: isMobile ? '0 0 16px 0' : '0 0 24px 0',
           color: theme.textColor,
         }}
       >
@@ -168,8 +170,8 @@ export const TextQuestion: React.FC<TextQuestionProps> = ({
       {question.description && (
         <p
           style={{
-            fontSize: '16px',
-            margin: '0 0 24px 0',
+            fontSize: isMobile ? '14px' : '16px',
+            margin: isMobile ? '0 0 16px 0' : '0 0 24px 0',
             color: theme.textColor,
           }}
         >

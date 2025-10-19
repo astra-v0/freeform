@@ -17,6 +17,7 @@ interface FeedbackFormProps {
   currentAnswer?: UserAnswer;
   theme: SurveyTheme;
   onAnswer: (answer: UserAnswer) => void;
+  isMobile?: boolean;
 }
 
 export const FeedbackForm: React.FC<FeedbackFormProps> = ({
@@ -24,6 +25,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
   currentAnswer,
   theme,
   onAnswer,
+  isMobile = false,
 }) => {
   const [formData, setFormData] = useState<Record<string, string>>({
     firstName: '',
@@ -114,7 +116,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
       focusedField === fieldName ? `0 2px 0 0 ${theme.accentColor}` : 'none',
     background: 'transparent',
     color: '#ffffff',
-    fontSize: '26px',
+    fontSize: isMobile ? '18px' : '26px',
     outline: 'none',
     fontFamily: 'inherit',
     transition: 'box-shadow 0.2s ease, border-bottom-color 0.2s ease',
@@ -122,8 +124,8 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
-    marginBottom: '8px',
-    fontSize: '14px',
+    marginBottom: isMobile ? '6px' : '8px',
+    fontSize: isMobile ? '13px' : '14px',
     color: '#cccccc',
   };
 
@@ -131,9 +133,9 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     <div>
       <h2
         style={{
-          fontSize: '24px',
+          fontSize: isMobile ? '18px' : '24px',
           fontWeight: 400,
-          margin: '0 0 24px 0',
+          margin: isMobile ? '0 0 16px 0' : '0 0 24px 0',
           color: theme.textColor,
         }}
       >
@@ -143,8 +145,8 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
       {question.description && (
         <p
           style={{
-            fontSize: '16px',
-            margin: '0 0 24px 0',
+            fontSize: isMobile ? '14px' : '16px',
+            margin: isMobile ? '0 0 16px 0' : '0 0 24px 0',
             color: theme.textColor,
           }}
         >
@@ -154,7 +156,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
 
       <div>
         {isFieldEnabled('firstName') && (
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: isMobile ? '20px' : '24px' }}>
             <label style={labelStyle}>
               First Name
               {isFieldRequired('firstName') && (
@@ -172,7 +174,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
             />
             {errors.firstName && (
               <div
-                style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}
+                style={{ color: '#ff6b6b', fontSize: isMobile ? '13px' : '14px', marginTop: '4px' }}
               >
                 {errors.firstName}
               </div>
@@ -181,7 +183,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         )}
 
         {isFieldEnabled('lastName') && (
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: isMobile ? '20px' : '24px' }}>
             <label style={labelStyle}>
               Last Name
               {isFieldRequired('lastName') && (
@@ -199,7 +201,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
             />
             {errors.lastName && (
               <div
-                style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}
+                style={{ color: '#ff6b6b', fontSize: isMobile ? '13px' : '14px', marginTop: '4px' }}
               >
                 {errors.lastName}
               </div>
@@ -208,7 +210,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         )}
 
         {isFieldEnabled('email') && (
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: isMobile ? '20px' : '24px' }}>
             <label style={labelStyle}>
               Email
               {isFieldRequired('email') && (
@@ -226,7 +228,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
             />
             {errors.email && (
               <div
-                style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}
+                style={{ color: '#ff6b6b', fontSize: isMobile ? '13px' : '14px', marginTop: '4px' }}
               >
                 {errors.email}
               </div>
@@ -235,7 +237,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
         )}
 
         {isFieldEnabled('company') && (
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: isMobile ? '20px' : '24px' }}>
             <label style={labelStyle}>
               Company
               {isFieldRequired('company') && (
@@ -253,7 +255,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
             />
             {errors.company && (
               <div
-                style={{ color: '#ff6b6b', fontSize: '14px', marginTop: '4px' }}
+                style={{ color: '#ff6b6b', fontSize: isMobile ? '13px' : '14px', marginTop: '4px' }}
               >
                 {errors.company}
               </div>

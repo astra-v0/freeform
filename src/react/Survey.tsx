@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import {
   SurveyConfig,
@@ -6,6 +6,8 @@ import {
   UserAnswer,
   SurveyFlowState,
   SurveyResponse,
+  TextQuestion as TextQuestionType,
+  FeedbackFormQuestion,
 } from '../types/index.js';
 import { TextQuestion } from './components/TextQuestion.js';
 import { ChoiceQuestion } from './components/ChoiceQuestion.js';
@@ -27,11 +29,30 @@ function lightenColor(color: string, amount: number) {
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
+// Hook to detect mobile device
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+}
+
 export const Survey: React.FC<SurveyProps> = ({
   config,
   onComplete,
   onAnswer,
 }) => {
+  const isMobile = useIsMobile();
+  
   const defaultTheme = {
     backgroundColor: '#1d1d1d',
     textColor: '#ffffff',
@@ -63,6 +84,19 @@ export const Survey: React.FC<SurveyProps> = ({
     setPendingAnswer(answer);
     setValidationError('');
   }, []);
+
+  const getNextQuestionId = useCallback((currentQuestion: Question): string | null => {
+    const currentIndex = config.questions.findIndex(
+      q => q.id === currentQuestion.id
+    );
+    const remainingQuestions = config.questions.slice(currentIndex + 1);
+
+    const nextQuestion = remainingQuestions.find(
+      q => !currentState.visitedQuestions.includes(q.id)
+    );
+
+    return nextQuestion?.id || null;
+  }, [config.questions, currentState.visitedQuestions]);
 
   const handleNext = useCallback(() => {
     const currentQuestion = getCurrentQuestion();
@@ -101,7 +135,7 @@ export const Survey: React.FC<SurveyProps> = ({
       pendingAnswer &&
       typeof pendingAnswer.value === 'string'
     ) {
-      const textQuestion = currentQuestion as any;
+      const textQuestion = currentQuestion as TextQuestionType;
       const trimmedValue = pendingAnswer.value.trim();
 
       if (textQuestion.validation && trimmedValue) {
@@ -140,7 +174,7 @@ export const Survey: React.FC<SurveyProps> = ({
 
     // Validate feedback form required fields
     if (currentQuestion?.type === 'feedback' && pendingAnswer) {
-      const feedbackQuestion = currentQuestion as any;
+      const feedbackQuestion = currentQuestion as FeedbackFormQuestion;
       const formData = pendingAnswer.value as Record<string, string>;
       const requiredFields: string[] = [];
 
@@ -197,7 +231,7 @@ export const Survey: React.FC<SurveyProps> = ({
         ...currentState.visitedQuestions,
         currentState.currentQuestionId,
       ];
-      const nextQuestionId = getNextQuestionId(currentQuestion!);
+      const nextQuestionId = currentQuestion ? getNextQuestionId(currentQuestion) : null;
 
       if (nextQuestionId) {
         setCurrentState(prev => ({
@@ -247,7 +281,8 @@ export const Survey: React.FC<SurveyProps> = ({
       currentState.currentQuestionId,
     ];
 
-    const nextQuestionId = getNextQuestionId(getCurrentQuestion()!);
+    const nextQuestion = getCurrentQuestion();
+    const nextQuestionId = nextQuestion ? getNextQuestionId(nextQuestion) : null;
 
     if (nextQuestionId) {
       setCurrentState(prev => ({
@@ -288,20 +323,8 @@ export const Survey: React.FC<SurveyProps> = ({
     onAnswer,
     onComplete,
     getCurrentQuestion,
+    getNextQuestionId,
   ]);
-
-  const getNextQuestionId = (currentQuestion: Question): string | null => {
-    const currentIndex = config.questions.findIndex(
-      q => q.id === currentQuestion.id
-    );
-    const remainingQuestions = config.questions.slice(currentIndex + 1);
-
-    const nextQuestion = remainingQuestions.find(
-      q => !currentState.visitedQuestions.includes(q.id)
-    );
-
-    return nextQuestion?.id || null;
-  };
 
   const handleBack = useCallback(() => {
     if (!currentState.canGoBack || currentState.visitedQuestions.length === 0) {
@@ -340,7 +363,7 @@ export const Survey: React.FC<SurveyProps> = ({
         >
           <h2
             style={{
-              fontSize: '24px',
+              fontSize: isMobile ? '20px' : '24px',
               fontWeight: 400,
               margin: 0,
               color: theme.textColor,
@@ -350,8 +373,8 @@ export const Survey: React.FC<SurveyProps> = ({
           </h2>
           <p
             style={{
-              fontSize: '16px',
-              marginTop: '16px',
+              fontSize: isMobile ? '14px' : '16px',
+              marginTop: isMobile ? '12px' : '16px',
               color: theme.textColor,
             }}
           >
@@ -369,21 +392,21 @@ export const Survey: React.FC<SurveyProps> = ({
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: '32px',
-      height: '32px',
+      width: isMobile ? '28px' : '32px',
+      height: isMobile ? '28px' : '32px',
       backgroundColor: theme.accentColor,
       color: '#1a1a1a',
       borderRadius: '6px',
-      fontSize: '16px',
+      fontSize: isMobile ? '14px' : '16px',
       fontWeight: 'bold',
-      marginRight: '16px',
-      marginBottom: '16px',
+      marginRight: isMobile ? '12px' : '16px',
+      marginBottom: isMobile ? '12px' : '16px',
     };
 
     const questionTitleStyle: React.CSSProperties = {
       display: 'flex',
       alignItems: 'flex-start',
-      marginBottom: '32px',
+      marginBottom: isMobile ? '20px' : '32px',
     };
 
     const questionContentStyle: React.CSSProperties = {
@@ -401,6 +424,7 @@ export const Survey: React.FC<SurveyProps> = ({
                 currentAnswer={currentAnswer}
                 theme={theme}
                 onAnswer={handleAnswerChange}
+                isMobile={isMobile}
               />
               {renderNavigation()}
             </div>
@@ -416,6 +440,7 @@ export const Survey: React.FC<SurveyProps> = ({
                 currentAnswer={currentAnswer}
                 theme={theme}
                 onAnswer={handleAnswerChange}
+                isMobile={isMobile}
               />
               {renderNavigation()}
             </div>
@@ -431,6 +456,7 @@ export const Survey: React.FC<SurveyProps> = ({
                 currentAnswer={currentAnswer}
                 theme={theme}
                 onAnswer={handleAnswerChange}
+                isMobile={isMobile}
               />
               {renderNavigation()}
             </div>
@@ -445,6 +471,7 @@ export const Survey: React.FC<SurveyProps> = ({
                 currentAnswer={currentAnswer}
                 theme={theme}
                 onAnswer={handleAnswerChange}
+                isMobile={isMobile}
               />
               {renderNavigation()}
             </div>
@@ -459,6 +486,7 @@ export const Survey: React.FC<SurveyProps> = ({
                 currentAnswer={currentAnswer}
                 theme={theme}
                 onAnswer={handleAnswerChange}
+                isMobile={isMobile}
               />
               {renderNavigation()}
             </div>
@@ -477,12 +505,15 @@ export const Survey: React.FC<SurveyProps> = ({
       backgroundColor: theme.accentColor,
       color: '#1a1a1a',
       border: 'none',
-      padding: '12px 32px',
-      fontSize: '16px',
+      padding: isMobile ? '14px 28px' : '12px 32px',
+      fontSize: isMobile ? '15px' : '16px',
       fontWeight: '500',
       borderRadius: '8px',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
+      minHeight: '44px',
+      minWidth: isMobile ? '80px' : 'auto',
+      touchAction: 'manipulation',
     };
 
     const backButtonStyle: React.CSSProperties = {
@@ -490,20 +521,23 @@ export const Survey: React.FC<SurveyProps> = ({
       color: '#cccccc',
       border: `1px solid ${lightenColor(theme.backgroundColor, 50)}`,
       borderRadius: '8px',
-      padding: '12px 32px',
-      fontSize: '16px',
+      padding: isMobile ? '14px 28px' : '12px 32px',
+      fontSize: isMobile ? '15px' : '16px',
       cursor: 'pointer',
+      minHeight: '44px',
+      minWidth: isMobile ? '80px' : 'auto',
+      touchAction: 'manipulation',
     };
 
     return (
-      <div style={{ marginTop: '15px' }}>
+      <div style={{ marginTop: isMobile ? '12px' : '15px' }}>
         {validationError && (
           <div
             style={{
               color: '#ffffff',
-              fontSize: '14px',
-              marginBottom: '16px',
-              padding: '12px 16px',
+              fontSize: isMobile ? '13px' : '14px',
+              marginBottom: isMobile ? '12px' : '16px',
+              padding: isMobile ? '10px 14px' : '12px 16px',
               backgroundColor: 'rgb(139 57 19)',
               borderRadius: '6px',
               display: 'flex',
@@ -513,9 +547,9 @@ export const Survey: React.FC<SurveyProps> = ({
             }}
           >
             <AlertTriangle
-              size={20}
+              size={isMobile ? 18 : 20}
               style={{
-                marginRight: '12px',
+                marginRight: isMobile ? '10px' : '12px',
                 flexShrink: 0,
               }}
             />
@@ -528,6 +562,7 @@ export const Survey: React.FC<SurveyProps> = ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-start',
+            gap: isMobile ? '8px' : '12px',
           }}
         >
           {currentState.canGoBack ? (
@@ -569,7 +604,7 @@ export const Survey: React.FC<SurveyProps> = ({
         color: theme.textColor,
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        padding: '40px',
+        padding: isMobile ? '16px' : '40px',
         boxSizing: 'border-box',
       }}
     >
@@ -577,9 +612,10 @@ export const Survey: React.FC<SurveyProps> = ({
         className="survey-content"
         style={{
           width: '100%',
-          maxWidth: '600px',
+          maxWidth: isMobile ? '100%' : '600px',
           maxHeight: '100%',
           overflow: 'auto',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {renderCurrentQuestion()}

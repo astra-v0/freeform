@@ -10,6 +10,7 @@ interface ChoiceQuestionProps {
   currentAnswer?: UserAnswer;
   theme: SurveyTheme;
   onAnswer: (answer: UserAnswer) => void;
+  isMobile?: boolean;
 }
 
 function lightenColor(color: string, amount: number) {
@@ -25,6 +26,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
   currentAnswer,
   theme,
   onAnswer,
+  isMobile = false,
 }) => {
   const [selectedValues, setSelectedValues] = useState<Set<string>>(new Set());
   const [otherValue, setOtherValue] = useState<string>('');
@@ -47,7 +49,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
       setSelectedValues(new Set());
       setOtherValue('');
     }
-  }, [currentAnswer, question.id]);
+  }, [currentAnswer, question.id, question.options]);
 
   useEffect(() => {
     if (selectedValues.size > 0 || otherValue.trim()) {
@@ -94,13 +96,14 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
     display: 'flex',
     alignItems: 'center',
     padding: '10px',
-    marginBottom: '7px',
+    marginBottom: isMobile ? '10px' : '7px',
     backgroundColor: '#2a2a2a',
     borderRadius: '8px',
     cursor: 'pointer',
     border: 'none',
     transition: 'all 0.2s ease',
     color: '#ffffff',
+    touchAction: 'manipulation',
   };
 
   const selectedOptionStyle: React.CSSProperties = {
@@ -111,16 +114,16 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
 
   const letterStyle: React.CSSProperties = {
     display: 'inline-block',
-    width: '24px',
-    height: '24px',
+    width: isMobile ? '28px' : '24px',
+    height: isMobile ? '28px' : '24px',
     backgroundColor: theme.backgroundColor,
     border: `1px solid ${lightenColor(theme.backgroundColor, 50)}`,
     borderRadius: '4px',
     textAlign: 'center',
-    lineHeight: '24px',
-    fontSize: '14px',
+    lineHeight: isMobile ? '28px' : '24px',
+    fontSize: isMobile ? '13px' : '14px',
     fontWeight: 'bold',
-    marginRight: '16px',
+    marginRight: isMobile ? '12px' : '16px',
   };
 
   const letterStyleSelected: React.CSSProperties = {
@@ -136,7 +139,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
     borderBottom: `1px solid ${theme.accentColor}`,
     background: 'transparent',
     color: '#ffffff',
-    fontSize: '26px',
+    fontSize: isMobile ? '18px' : '26px',
     outline: 'none',
     fontFamily: 'inherit',
   };
@@ -145,9 +148,9 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
     <div>
       <h2
         style={{
-          fontSize: '24px',
+          fontSize: isMobile ? '18px' : '24px',
           fontWeight: 400,
-          margin: '0 0 24px 0',
+          margin: isMobile ? '0 0 16px 0' : '0 0 24px 0',
           color: theme.textColor,
         }}
       >
@@ -157,8 +160,8 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
       {question.description && (
         <p
           style={{
-            fontSize: '16px',
-            margin: '0 0 24px 0',
+            fontSize: isMobile ? '14px' : '16px',
+            margin: isMobile ? '0 0 16px 0' : '0 0 24px 0',
             color: theme.textColor,
           }}
         >
@@ -194,7 +197,7 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
               </div>
               <span
                 style={{
-                  fontSize: '16px',
+                  fontSize: isMobile ? '15px' : '16px',
                   color: '#ffffff',
                   flex: 1,
                 }}
@@ -208,17 +211,17 @@ export const ChoiceQuestion: React.FC<ChoiceQuestionProps> = ({
         {question.allowOther && (
           <div
             style={{
-              marginTop: '24px',
-              padding: '16px 20px',
+              marginTop: isMobile ? '16px' : '24px',
+              padding: isMobile ? '14px 16px' : '16px 20px',
               backgroundColor: '#2a2a2a',
               borderRadius: '8px',
             }}
           >
             <div
               style={{
-                fontSize: '14px',
+                fontSize: isMobile ? '13px' : '14px',
                 color: '#cccccc',
-                marginBottom: '12px',
+                marginBottom: isMobile ? '10px' : '12px',
               }}
             >
               Other option:

@@ -11,6 +11,7 @@ interface SocialQuestionProps {
   currentAnswer?: UserAnswer;
   theme: SurveyTheme;
   onAnswer: (answer: UserAnswer) => void;
+  isMobile?: boolean;
 }
 
 export const SocialQuestion: React.FC<SocialQuestionProps> = ({
@@ -18,6 +19,7 @@ export const SocialQuestion: React.FC<SocialQuestionProps> = ({
   currentAnswer: _currentAnswer,
   theme,
   onAnswer,
+  isMobile = false,
 }) => {
   const handleSocialClick = (socialName: string, url: string) => {
     // Track the social share
@@ -47,15 +49,15 @@ export const SocialQuestion: React.FC<SocialQuestionProps> = ({
         style={{
           display: 'flex',
           alignItems: 'center',
-          marginBottom: '24px',
+          marginBottom: isMobile ? '16px' : '24px',
         }}
       >
         <div>
           <h2
             style={{
-              fontSize: '24px',
+              fontSize: isMobile ? '18px' : '24px',
               fontWeight: '400',
-              margin: '0 0 8px 0',
+              margin: isMobile ? '0 0 6px 0' : '0 0 8px 0',
               color: theme.textColor,
             }}
           >
@@ -65,7 +67,7 @@ export const SocialQuestion: React.FC<SocialQuestionProps> = ({
           {question.description && (
             <p
               style={{
-                fontSize: '16px',
+                fontSize: isMobile ? '14px' : '16px',
                 margin: '0',
                 color: theme.textColor,
                 opacity: 0.8,
@@ -80,8 +82,10 @@ export const SocialQuestion: React.FC<SocialQuestionProps> = ({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '16px',
+          gridTemplateColumns: isMobile 
+            ? '1fr' 
+            : 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: isMobile ? '12px' : '16px',
         }}
       >
         {question.socials.map((social, index) => {
@@ -94,16 +98,19 @@ export const SocialQuestion: React.FC<SocialQuestionProps> = ({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '16px 20px',
+                justifyContent: isMobile ? 'center' : 'flex-start',
+                padding: isMobile ? '14px 18px' : '16px 20px',
                 backgroundColor: 'transparent',
                 border: `2px solid ${theme.accentColor}`,
-                borderRadius: '12px',
+                borderRadius: isMobile ? '10px' : '12px',
                 color: theme.textColor,
-                fontSize: '16px',
+                fontSize: isMobile ? '15px' : '16px',
                 fontWeight: '500',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 textDecoration: 'none',
+                minHeight: '44px',
+                touchAction: 'manipulation',
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.backgroundColor = theme.accentColor;
@@ -114,7 +121,7 @@ export const SocialQuestion: React.FC<SocialQuestionProps> = ({
                 e.currentTarget.style.color = theme.textColor;
               }}
             >
-              <IconComponent size={20} style={{ marginRight: '12px' }} />
+              <IconComponent size={isMobile ? 18 : 20} style={{ marginRight: isMobile ? '10px' : '12px' }} />
               {social.name}
             </button>
           );

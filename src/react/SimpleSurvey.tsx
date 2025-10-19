@@ -5,6 +5,7 @@ import {
   Question,
   SurveyTheme,
   ChoiceOption,
+  SurveyResponse,
 } from '../types/index.js';
 
 export interface SimpleSocialLink {
@@ -53,7 +54,7 @@ export interface SimpleQuestion {
 }
 
 export interface SimpleSurveyResult {
-  answers: Record<string, any>;
+  answers: Record<string, string | string[] | boolean | number | Record<string, string>>;
   completedAt: Date;
 }
 
@@ -197,10 +198,10 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
     startQuestionId: 'q1',
   };
 
-  const handleComplete = (response: any) => {
+  const handleComplete = (response: SurveyResponse) => {
     if (onComplete) {
-      const answers: Record<string, any> = {};
-      response.answers.forEach((answer: any) => {
+      const answers: Record<string, string | string[] | boolean | number | Record<string, string>> = {};
+      response.answers.forEach((answer) => {
         const questionIndex = parseInt(answer.questionId.substring(1)) - 1;
         const originalQuestion = questions[questionIndex];
 
