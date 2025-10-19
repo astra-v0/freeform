@@ -4,12 +4,23 @@ export interface SurveyTheme {
   accentColor: string;
 }
 
+export interface NextButtonConfig {
+  text?: string;
+  url?: string;
+  icon?: string;
+  style?: 'filled' | 'outlined' | 'ghost' | 'link' | 'none';
+}
+
 export interface QuestionBase {
   id: string;
   type: 'text' | 'choice' | 'feedback' | 'conditional' | 'info' | 'social';
   title: string;
   description?: string;
   required?: boolean;
+  hidden?: boolean;
+  final?: boolean;
+  submit?: boolean;
+  nextButton?: NextButtonConfig;
 }
 
 export interface TextQuestion extends QuestionBase {

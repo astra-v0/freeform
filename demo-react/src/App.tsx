@@ -3,6 +3,7 @@ import { SimpleSurvey, SimpleQuestion, SimpleSurveyResult } from '../../src/reac
 function App() {
   const questions: SimpleQuestion[] = [
     {
+      id: 'q1',
       title: '👽 Greetings, Earthling! Please state your species and place of origin.',
       type: 'text',
       multiline: false,
@@ -10,6 +11,7 @@ function App() {
       required: true
     },
     {
+      id: 'q2',
       title: 'How many planetary cycles ("years") have you experienced since your emergence?',
       type: 'text',
       placeholder: 'Enter your age in years',
@@ -22,6 +24,14 @@ function App() {
       }
     },
     {
+      id: 'q2.1',
+      title: 'Im hidden',
+      type: 'info',
+      required: false,
+      hidden: true
+    },
+    {
+      id: 'q3',
       title: 'What is your primary function on your home planet?',
       type: 'choice',
       options: [
@@ -34,6 +44,7 @@ function App() {
       required: true
     },
     {
+      id: 'q4',
       title: 'If you were given the opportunity, would you willingly communicate with civilizations from other galaxies?',
       type: 'choice',
       options: [
@@ -45,6 +56,7 @@ function App() {
       required: true
     },
     {
+      id: 'q5',
       title: 'We have observed the phenomenon you call "pizza." Please rate its significance to your culture.',
       type: 'choice',
       options: [
@@ -56,16 +68,51 @@ function App() {
       required: false
     },
     {
-      title: 'For continuing communication, please provide your cosmic identification signals. Fields marked with * are required.',
+      id: 'q6',
+      title: 'Do you want to give us some data about you?',
+      type: 'choice',
+      options: [
+        'Yes, right now',
+        'Yes, later'
+      ],
+      required: true,
+      nextButton: {
+        text: 'Continue',
+        style: 'outlined'
+      }
+    },
+    {
+      id: 'q6.5',
+      title: 'This question has a ghost button',
+      type: 'info',
+      nextButton: {
+        text: 'Ghost Button',
+        style: 'ghost'
+      }
+    },
+    {
+      id: 'q6.6',
+      title: 'This question has a link button',
+      type: 'info',
+      nextButton: {
+        text: 'Link Button',
+        style: 'link'
+      }
+    },
+    {
+      id: 'form',
+      title: 'For continuing communication, please provide your cosmic identification signals.',
       type: 'feedback',
       fields: {
         firstName: { enabled: true, required: true },
         lastName: { enabled: true, required: false },
         email: { enabled: true, required: true }
       },
-      required: true
+      required: true,
+      submit: true
     },
     {
+      id: 'q7',
       title: 'Thank you, Earthling! Share this transmission with your planetary network!',
       type: 'social',
       socials: [
@@ -85,19 +132,32 @@ function App() {
           name: 'Wormhole Mail',
           url: 'mailto:?subject=Participate in Intergalactic Survey&body=Alien abductors want to know more about you: https://www.google.com'
         }
-      ]
+      ],
+      final: true,
+      nextButton: {
+        text: 'Home Page',
+        url: 'https://astra-v0.ru',
+        icon: 'https://astra-v0.ru/favicon.ico',
+        style: 'filled'
+      }
     }
   ];
 
   const handleComplete = (result: SimpleSurveyResult) => {
     console.log('Survey completed!', result);
-    alert(`Thank you! Received answers:\n${JSON.stringify(result.answers, null, 2)}`);
+    alert(`Survey completed! Final answers:\n${JSON.stringify(result.answers, null, 2)}`);
+  };
+
+  const handleSubmit = (result: SimpleSurveyResult) => {
+    console.log('Form submitted!', result);
+    alert(`Form submitted! Current answers:\n${JSON.stringify(result.answers, null, 2)}`);
   };
 
   return (
     <SimpleSurvey 
       questions={questions}
       onComplete={handleComplete}
+      onSubmit={handleSubmit}
     />
   );
 }

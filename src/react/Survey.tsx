@@ -18,6 +18,7 @@ import { SocialQuestion } from './components/SocialQuestion.js';
 interface SurveyProps {
   config: SurveyConfig;
   onComplete?: (response: SurveyResponse) => void;
+  onSubmit?: (response: SurveyResponse) => void;
   onAnswer?: (answer: UserAnswer) => void;
 }
 
@@ -49,6 +50,7 @@ function useIsMobile() {
 export const Survey: React.FC<SurveyProps> = ({
   config,
   onComplete,
+  onSubmit,
   onAnswer,
 }) => {
   const isMobile = useIsMobile();
@@ -92,7 +94,7 @@ export const Survey: React.FC<SurveyProps> = ({
     const remainingQuestions = config.questions.slice(currentIndex + 1);
 
     const nextQuestion = remainingQuestions.find(
-      q => !currentState.visitedQuestions.includes(q.id)
+      q => !currentState.visitedQuestions.includes(q.id) && !q.hidden
     );
 
     return nextQuestion?.id || null;
@@ -100,6 +102,13 @@ export const Survey: React.FC<SurveyProps> = ({
 
   const handleNext = useCallback(() => {
     const currentQuestion = getCurrentQuestion();
+    
+    // If button has URL, redirect immediately without validation
+    if (currentQuestion?.nextButton?.url) {
+      window.location.href = currentQuestion.nextButton.url;
+      return;
+    }
+    
     if (currentQuestion?.required === true) {
       if (!pendingAnswer || !pendingAnswer.value) {
         if (currentQuestion.type === 'choice') {
@@ -259,7 +268,11 @@ export const Survey: React.FC<SurveyProps> = ({
           metadata: config.metadata,
         };
 
-        if (onComplete) {
+        // Check if this is a submit or complete action
+        const currentQuestion = getCurrentQuestion();
+        if (currentQuestion?.submit && onSubmit) {
+          onSubmit(response);
+        } else if (currentQuestion?.final && onComplete) {
           onComplete(response);
         }
       }
@@ -312,7 +325,11 @@ export const Survey: React.FC<SurveyProps> = ({
         metadata: config.metadata,
       };
 
-      if (onComplete) {
+      // Check if this is a submit or complete action
+      const currentQuestion = getCurrentQuestion();
+      if (currentQuestion?.submit && onSubmit) {
+        onSubmit(response);
+      } else if (currentQuestion?.final && onComplete) {
         onComplete(response);
       }
     }
@@ -322,6 +339,7 @@ export const Survey: React.FC<SurveyProps> = ({
     config,
     onAnswer,
     onComplete,
+    onSubmit,
     getCurrentQuestion,
     getNextQuestionId,
   ]);
@@ -501,20 +519,69 @@ export const Survey: React.FC<SurveyProps> = ({
     const question = getCurrentQuestion();
     if (!question) return null;
 
-    const okButtonStyle: React.CSSProperties = {
-      backgroundColor: theme.accentColor,
-      color: '#1a1a1a',
-      border: 'none',
-      padding: isMobile ? '14px 28px' : '12px 32px',
-      fontSize: isMobile ? '15px' : '16px',
-      fontWeight: '500',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      minHeight: '44px',
-      minWidth: isMobile ? '80px' : 'auto',
-      touchAction: 'manipulation',
+    // Get next button configuration
+    const nextButtonConfig = question.nextButton;
+    const buttonText = nextButtonConfig?.text || 'OK';
+    const buttonStyle = nextButtonConfig?.style || 'filled';
+
+    const getButtonStyle = (): React.CSSProperties => {
+      const baseStyle: React.CSSProperties = {
+        border: 'none',
+        padding: isMobile ? '14px 28px' : '12px 32px',
+        fontSize: isMobile ? '15px' : '16px',
+        fontWeight: '500',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        minHeight: '44px',
+        minWidth: isMobile ? '80px' : 'auto',
+        touchAction: 'manipulation',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
+      };
+
+      switch (buttonStyle) {
+        case 'outlined':
+          return {
+            ...baseStyle,
+            backgroundColor: 'transparent',
+            color: theme.accentColor,
+            border: `2px solid ${theme.accentColor}`,
+          };
+        case 'ghost':
+          return {
+            ...baseStyle,
+            backgroundColor: 'transparent',
+            color: theme.accentColor,
+            border: 'none',
+          };
+        case 'link':
+          return {
+            ...baseStyle,
+            backgroundColor: 'transparent',
+            color: theme.accentColor,
+            border: 'none',
+            textDecoration: 'underline',
+            padding: '8px 16px',
+          };
+        case 'none':
+          return {
+            ...baseStyle,
+            display: 'none',
+          };
+        case 'filled':
+        default:
+          return {
+            ...baseStyle,
+            backgroundColor: theme.accentColor,
+            color: '#1a1a1a',
+          };
+      }
     };
+
+    const okButtonStyle = getButtonStyle();
 
     const backButtonStyle: React.CSSProperties = {
       background: 'transparent',
@@ -573,18 +640,31 @@ export const Survey: React.FC<SurveyProps> = ({
             <div></div>
           )}
 
-          <button
-            onClick={handleNext}
-            style={okButtonStyle}
-            onMouseEnter={_e => {
-              // _e.currentTarget.style.fontWeight = '600';
-            }}
-            onMouseLeave={_e => {
-              // _e.currentTarget.style.fontWeight = '500';
-            }}
-          >
-            OK
-          </button>
+          {buttonStyle !== 'none' && (
+            <button
+              onClick={handleNext}
+              style={okButtonStyle}
+              onMouseEnter={_e => {
+                // _e.currentTarget.style.fontWeight = '600';
+              }}
+              onMouseLeave={_e => {
+                // _e.currentTarget.style.fontWeight = '500';
+              }}
+            >
+              {nextButtonConfig?.icon && (
+                <img 
+                  src={nextButtonConfig.icon} 
+                  alt="" 
+                  style={{ 
+                    width: '16px', 
+                    height: '16px',
+                    objectFit: 'contain'
+                  }} 
+                />
+              )}
+              {buttonText}
+            </button>
+          )}
         </div>
       </div>
     );

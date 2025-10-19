@@ -14,7 +14,15 @@ export interface SimpleSocialLink {
   icon?: string;
 }
 
+export interface SimpleNextButtonConfig {
+  text?: string;
+  url?: string;
+  icon?: string;
+  style?: 'filled' | 'outlined' | 'ghost' | 'link' | 'none';
+}
+
 export interface SimpleQuestion {
+  id?: string;
   title: string;
   description?: string;
   placeholder?: string;
@@ -51,6 +59,10 @@ export interface SimpleQuestion {
   socials?: SimpleSocialLink[];
 
   required?: boolean;
+  hidden?: boolean;
+  final?: boolean;
+  submit?: boolean;
+  nextButton?: SimpleNextButtonConfig;
 }
 
 export interface SimpleSurveyResult {
@@ -62,13 +74,19 @@ export interface SimpleSurveyProps {
   questions: SimpleQuestion[];
   theme?: Partial<SurveyTheme>;
   onComplete?: (result: SimpleSurveyResult) => void;
+  onSubmit?: (result: SimpleSurveyResult) => void;
 }
 
 const generateId = (index: number): string => `q${index + 1}`;
 
 const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
+  // Find the last visible question to mark it as final
+  const visibleQuestions = simpleQuestions.filter(q => !q.hidden);
+  const lastVisibleIndex = simpleQuestions.findIndex(q => q === visibleQuestions[visibleQuestions.length - 1]);
+  
   return simpleQuestions.map((q, index) => {
-    const id = generateId(index);
+    const id = q.id || generateId(index);
+    const isLastVisible = index === lastVisibleIndex;
 
     if (q.type === 'text') {
       return {
@@ -81,6 +99,10 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
         maxLength: q.maxLength,
         validation: q.validation,
         required: q.required,
+        hidden: q.hidden,
+        final: q.final ?? isLastVisible,
+        submit: q.submit,
+        nextButton: q.nextButton,
       };
     }
 
@@ -109,6 +131,10 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
         multiple: q.multiple,
         allowOther: q.allowOther,
         required: q.required,
+        hidden: q.hidden,
+        final: q.final ?? isLastVisible,
+        submit: q.submit,
+        nextButton: q.nextButton,
       };
     }
 
@@ -148,6 +174,10 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
           company: convertField('company', false),
         },
         required: q.required,
+        hidden: q.hidden,
+        final: q.final ?? isLastVisible,
+        submit: q.submit,
+        nextButton: q.nextButton,
       };
     }
 
@@ -159,6 +189,10 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
         description: q.description,
         icon: q.icon,
         required: q.required,
+        hidden: q.hidden,
+        final: q.final ?? isLastVisible,
+        submit: q.submit,
+        nextButton: q.nextButton,
       };
     }
 
@@ -174,6 +208,10 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
           icon: social.icon,
         })),
         required: q.required,
+        hidden: q.hidden,
+        final: q.final ?? isLastVisible,
+        submit: q.submit,
+        nextButton: q.nextButton,
       };
     }
 
@@ -185,6 +223,7 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
   questions,
   theme,
   onComplete,
+  onSubmit,
 }) => {
   const config: SurveyConfig = {
     id: `survey_${Date.now()}`,
@@ -198,23 +237,33 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
     startQuestionId: 'q1',
   };
 
+  const convertResponseToResult = (response: SurveyResponse): SimpleSurveyResult => {
+    const answers: Record<string, string | string[] | boolean | number | Record<string, string>> = {};
+    response.answers.forEach((answer) => {
+      const questionIndex = parseInt(answer.questionId.substring(1)) - 1;
+      const originalQuestion = questions[questionIndex];
+
+      const key = originalQuestion.title;
+      answers[key] = answer.value;
+    });
+
+    return {
+      answers,
+      completedAt: response.endTime || new Date(),
+    };
+  };
+
   const handleComplete = (response: SurveyResponse) => {
     if (onComplete) {
-      const answers: Record<string, string | string[] | boolean | number | Record<string, string>> = {};
-      response.answers.forEach((answer) => {
-        const questionIndex = parseInt(answer.questionId.substring(1)) - 1;
-        const originalQuestion = questions[questionIndex];
-
-        const key = originalQuestion.title;
-        answers[key] = answer.value;
-      });
-
-      onComplete({
-        answers,
-        completedAt: response.endTime || new Date(),
-      });
+      onComplete(convertResponseToResult(response));
     }
   };
 
-  return <Survey config={config} onComplete={handleComplete} />;
+  const handleSubmit = (response: SurveyResponse) => {
+    if (onSubmit) {
+      onSubmit(convertResponseToResult(response));
+    }
+  };
+
+  return <Survey config={config} onComplete={handleComplete} onSubmit={handleSubmit} />;
 };
