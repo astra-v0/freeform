@@ -4,11 +4,22 @@ export interface SurveyTheme {
   accentColor: string;
 }
 
+export interface NextButtonCondition {
+  elementId: string;
+  operator: 'equals' | 'not_equals' | 'contains' | 'not_contains';
+  value: string | string[];
+  action: {
+    type: 'jump';
+    elementId: string;
+  };
+}
+
 export interface NextButtonConfig {
   text?: string;
   url?: string;
   icon?: string;
   style?: 'filled' | 'outlined' | 'ghost' | 'link' | 'none';
+  condition?: NextButtonCondition;
 }
 
 export interface QuestionBase {

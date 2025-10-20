@@ -14,11 +14,22 @@ export interface SimpleSocialLink {
   icon?: string;
 }
 
+export interface SimpleNextButtonCondition {
+  elementId: string;
+  operator: 'equals' | 'not_equals' | 'contains' | 'not_contains';
+  value: string | string[];
+  action: {
+    type: 'jump';
+    elementId: string;
+  };
+}
+
 export interface SimpleNextButtonConfig {
   text?: string;
   url?: string;
   icon?: string;
   style?: 'filled' | 'outlined' | 'ghost' | 'link' | 'none';
+  condition?: SimpleNextButtonCondition;
 }
 
 export interface SimpleQuestion {
@@ -82,11 +93,11 @@ const generateId = (index: number): string => `q${index + 1}`;
 const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
   // Find the last visible question to mark it as final
   const visibleQuestions = simpleQuestions.filter(q => !q.hidden);
-  const lastVisibleIndex = simpleQuestions.findIndex(q => q === visibleQuestions[visibleQuestions.length - 1]);
+  const lastVisibleQuestion = visibleQuestions[visibleQuestions.length - 1];
   
   return simpleQuestions.map((q, index) => {
     const id = q.id || generateId(index);
-    const isLastVisible = index === lastVisibleIndex;
+    const isLastVisible = q === lastVisibleQuestion;
 
     if (q.type === 'text') {
       return {
@@ -112,13 +123,13 @@ const convertQuestions = (simpleQuestions: SimpleQuestion[]): Question[] => {
           return {
             id: `${id}_opt${optIndex + 1}`,
             label: opt,
-            value: opt.toLowerCase().replace(/\s+/g, '_'),
+            value: opt, // Use original value without processing
           };
         }
         return {
           id: `${id}_opt${optIndex + 1}`,
           label: opt.label,
-          value: opt.value || opt.label.toLowerCase().replace(/\s+/g, '_'),
+          value: opt.value || opt.label, // Use original value without processing
         };
       });
 
@@ -240,10 +251,8 @@ export const SimpleSurvey: React.FC<SimpleSurveyProps> = ({
   const convertResponseToResult = (response: SurveyResponse): SimpleSurveyResult => {
     const answers: Record<string, string | string[] | boolean | number | Record<string, string>> = {};
     response.answers.forEach((answer) => {
-      const questionIndex = parseInt(answer.questionId.substring(1)) - 1;
-      const originalQuestion = questions[questionIndex];
 
-      const key = originalQuestion.title;
+      const key = answer.questionId;
       answers[key] = answer.value;
     });
 

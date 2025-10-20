@@ -77,26 +77,15 @@ function App() {
       ],
       required: true,
       nextButton: {
-        text: 'Continue',
-        style: 'outlined'
-      }
-    },
-    {
-      id: 'q6.5',
-      title: 'This question has a ghost button',
-      type: 'info',
-      nextButton: {
-        text: 'Ghost Button',
-        style: 'ghost'
-      }
-    },
-    {
-      id: 'q6.6',
-      title: 'This question has a link button',
-      type: 'info',
-      nextButton: {
-        text: 'Link Button',
-        style: 'link'
+        condition: {
+          elementId: 'q6',
+          operator: 'equals',
+          value: 'Yes, later',
+          action: {
+            type: 'jump',
+            elementId: 'q7'
+          }
+        }
       }
     },
     {
@@ -136,8 +125,8 @@ function App() {
       final: true,
       nextButton: {
         text: 'Home Page',
-        url: 'https://astra-v0.ru',
-        icon: 'https://astra-v0.ru/favicon.ico',
+        url: 'http://astra-v0.ru',
+        icon: 'http://astra-v0.ru/favicon.ico',
         style: 'filled'
       }
     }

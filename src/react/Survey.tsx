@@ -87,6 +87,43 @@ export const Survey: React.FC<SurveyProps> = ({
     setValidationError('');
   }, []);
 
+  const evaluateCondition = useCallback((condition: any, answers: Map<string, UserAnswer>): boolean => {
+    const answer = answers.get(condition.elementId);
+    if (!answer) return false;
+
+    const answerValue = answer.value;
+    const conditionValue = condition.value;
+
+    switch (condition.operator) {
+      case 'equals':
+        if (Array.isArray(answerValue)) {
+          return answerValue.includes(conditionValue);
+        }
+        return answerValue === conditionValue;
+      
+      case 'not_equals':
+        if (Array.isArray(answerValue)) {
+          return !answerValue.includes(conditionValue);
+        }
+        return answerValue !== conditionValue;
+      
+      case 'contains':
+        if (Array.isArray(answerValue)) {
+          return answerValue.some(v => String(v).includes(String(conditionValue)));
+        }
+        return String(answerValue).includes(String(conditionValue));
+      
+      case 'not_contains':
+        if (Array.isArray(answerValue)) {
+          return !answerValue.some(v => String(v).includes(String(conditionValue)));
+        }
+        return !String(answerValue).includes(String(conditionValue));
+      
+      default:
+        return false;
+    }
+  }, []);
+
   const getNextQuestionId = useCallback((currentQuestion: Question): string | null => {
     const currentIndex = config.questions.findIndex(
       q => q.id === currentQuestion.id
@@ -102,12 +139,6 @@ export const Survey: React.FC<SurveyProps> = ({
 
   const handleNext = useCallback(() => {
     const currentQuestion = getCurrentQuestion();
-    
-    // If button has URL, redirect immediately without validation
-    if (currentQuestion?.nextButton?.url) {
-      window.location.href = currentQuestion.nextButton.url;
-      return;
-    }
     
     if (currentQuestion?.required === true) {
       if (!pendingAnswer || !pendingAnswer.value) {
@@ -293,9 +324,58 @@ export const Survey: React.FC<SurveyProps> = ({
       ...currentState.visitedQuestions,
       currentState.currentQuestionId,
     ];
+    
+    // Check for conditional navigation after saving the answer
+    let nextQuestionId: string | null = null;
+    if (currentQuestion?.nextButton?.condition) {
+      const condition = currentQuestion.nextButton.condition;
+      if (evaluateCondition(condition, newAnswers)) {
+        nextQuestionId = condition.action.elementId;
+      }
+    }
+    
+    // If no conditional navigation, use normal flow
+    if (!nextQuestionId) {
+      nextQuestionId = currentQuestion ? getNextQuestionId(currentQuestion) : null;
+    }
 
-    const nextQuestion = getCurrentQuestion();
-    const nextQuestionId = nextQuestion ? getNextQuestionId(nextQuestion) : null;
+    console.log('currentQuestion', currentQuestion);
+
+    // Check for submit/complete actions after saving the answer
+    if (currentQuestion?.submit && onSubmit) {
+      const response: SurveyResponse = {
+        surveyId: config.id,
+        sessionId: sessionIdRef.current,
+        answers: Array.from(newAnswers.values()),
+        completed: false,
+        startTime: startTimeRef.current,
+        endTime: new Date(),
+        metadata: config.metadata,
+      };
+      onSubmit(response);
+    }
+
+    // check if next question is final
+    const nextQuestion = nextQuestionId ? config.questions.find(q => q.id === nextQuestionId) : null;
+    if (nextQuestion?.final && onComplete) {
+      const response: SurveyResponse = {
+        surveyId: config.id,
+        sessionId: sessionIdRef.current,
+        answers: Array.from(newAnswers.values()),
+        completed: true,
+        startTime: startTimeRef.current,
+        endTime: new Date(),
+        metadata: config.metadata,
+      };
+      onComplete(response);
+    }
+
+    // Check for URL redirect after processing submit/complete
+    if (currentQuestion?.nextButton?.url) {
+      // If this is a final question, call onComplete before redirect
+      window.location.href = currentQuestion.nextButton.url;
+      return;
+    }
 
     if (nextQuestionId) {
       setCurrentState(prev => ({
@@ -327,9 +407,19 @@ export const Survey: React.FC<SurveyProps> = ({
 
       // Check if this is a submit or complete action
       const currentQuestion = getCurrentQuestion();
+      console.log('Survey ending - checking submit/complete:', {
+        currentQuestionId: currentQuestion?.id,
+        isSubmit: currentQuestion?.submit,
+        isFinal: currentQuestion?.final,
+        hasOnSubmit: !!onSubmit,
+        hasOnComplete: !!onComplete
+      });
+      
       if (currentQuestion?.submit && onSubmit) {
+        console.log('Calling onSubmit');
         onSubmit(response);
       } else if (currentQuestion?.final && onComplete) {
+        console.log('Calling onComplete');
         onComplete(response);
       }
     }
@@ -342,6 +432,7 @@ export const Survey: React.FC<SurveyProps> = ({
     onSubmit,
     getCurrentQuestion,
     getNextQuestionId,
+    evaluateCondition,
   ]);
 
   const handleBack = useCallback(() => {
