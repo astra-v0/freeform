@@ -4,12 +4,10 @@ import {
   SurveyTheme,
   Question,
 } from './types/index.js';
-import { SurveyEngine } from './core/SurveyEngine.js';
 import { DataExporter } from './export/DataExporter.js';
 
 export class SurveyBuilder {
   private config: SurveyConfig;
-  private engine?: SurveyEngine;
   private responses: SurveyResponse[] = [];
 
   constructor(config: SurveyConfig) {
@@ -17,43 +15,19 @@ export class SurveyBuilder {
   }
 
   public render(container: HTMLElement): SurveyBuilder {
-    this.engine = new SurveyEngine(this.config, container);
-    this.engine.setEventHandlers({
-      onNext: answer => {
-        console.log('Answer received:', answer);
-      },
-      onComplete: response => {
-        this.responses.push(response);
-        console.log('Survey completed:', response);
-      },
-      onError: error => {
-        console.error('Survey error:', error);
-      },
-    });
-
+    console.warn('SurveyBuilder.render() is deprecated. Use React components instead.');
     return this;
   }
 
   public onComplete(
     callback: (response: SurveyResponse) => void
   ): SurveyBuilder {
-    if (this.engine) {
-      this.engine.setEventHandlers({
-        onComplete: response => {
-          this.responses.push(response);
-          callback(response);
-        },
-      });
-    }
+    console.warn('SurveyBuilder.onComplete() is deprecated. Use React components instead.');
     return this;
   }
 
   public onAnswer(callback: (answer: any) => void): SurveyBuilder {
-    if (this.engine) {
-      this.engine.setEventHandlers({
-        onNext: callback,
-      });
-    }
+    console.warn('SurveyBuilder.onAnswer() is deprecated. Use React components instead.');
     return this;
   }
 
@@ -79,15 +53,18 @@ export class SurveyBuilder {
   }
 
   public getCurrentState() {
-    return this.engine?.getCurrentState();
+    console.warn('SurveyBuilder.getCurrentState() is deprecated. Use React components instead.');
+    return undefined;
   }
 
   public getAnswers() {
-    return this.engine?.getAnswers() || [];
+    console.warn('SurveyBuilder.getAnswers() is deprecated. Use React components instead.');
+    return [];
   }
 
   public getStartTime() {
-    return this.engine?.getStartTime();
+    console.warn('SurveyBuilder.getStartTime() is deprecated. Use React components instead.');
+    return undefined;
   }
 
   public static createConfig(options: {

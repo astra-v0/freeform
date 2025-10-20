@@ -1,5 +1,4 @@
 export { SurveyBuilder } from './SurveyBuilder.js';
-export { SurveyEngine } from './core/SurveyEngine.js';
 export { DataExporter } from './export/DataExporter.js';
 
 export { Survey } from './react/Survey.js';
@@ -29,10 +28,6 @@ export type {
   SurveyResults,
 } from './types/index.js';
 
-export { QuestionRenderer } from './components/QuestionRenderer.js';
-export { TextQuestionRenderer } from './components/TextQuestionRenderer.js';
-export { ChoiceQuestionRenderer } from './components/ChoiceQuestionRenderer.js';
-export { FeedbackFormRenderer } from './components/FeedbackFormRenderer.js';
 
 export const createSurvey = SurveyBuilder.createConfig;
 export const createTheme = SurveyBuilder.createTheme;
